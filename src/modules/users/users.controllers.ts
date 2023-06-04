@@ -13,7 +13,8 @@ export const registerUserHandler = async (
     const user = await createUser(body);
     return reply.code(201).send(user);
   } catch (error) {
-    console.log(error);
-    return reply.code(500).send(error);
+    return reply
+      .code(500)
+      .send({ success: false, message: 'Internal Server Error' });
   }
 };

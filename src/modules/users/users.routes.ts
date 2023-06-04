@@ -1,19 +1,30 @@
 import { FastifyInstance } from 'fastify';
 import { registerUserHandler } from './users.controllers.js';
-import { $ref } from './users.schema.js';
+import { register, buildJsonSchemas } from 'fastify-zod';
+import {
+  CreateUserResponseSchema,
+  CreateUserInputSchema
+} from './users.schema.js';
 
-export const userRoutes = (server: FastifyInstance) => {
-  server.post(
+export const userRoutes = async (server: FastifyInstance) => {
+  await register(server, {
+    jsonSchemas: buildJsonSchemas(
+      {
+        CreateUserInputSchema,
+        CreateUserResponseSchema
+      },
+      { errorMessages: true }
+    )
+  });
+  server.zod.post(
     '/',
     {
-      schema: {
-        body: $ref('createUserSchema'),
-        response: {
-          201: $ref('createUserResponseSchema'),
-        },
-      },
+      operationId: 'createUser',
+      body: 'CreateUserInputSchema',
+      reply: 'CreateUserResponseSchema'
     },
     registerUserHandler
   );
+
   return server;
 };

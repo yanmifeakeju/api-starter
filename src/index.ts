@@ -1,22 +1,43 @@
 import Fastify from 'fastify';
 import { userRoutes } from './modules/users/users.routes.js';
-import { userSchemas } from './modules/users/users.schema.js';
+import { createRequire } from 'module';
+import { schemaErrorMessageGenerator } from './utils/schema/errorMessage.js';
 
-const server = Fastify();
+const require = createRequire(import.meta.url);
 
-server.get('/health-check', async () => {
+const fastify = Fastify({
+  ajv: {
+    customOptions: {
+      allErrors: true
+    },
+    plugins: [require('ajv-errors')]
+  }
+});
+
+fastify.setErrorHandler((error, request, reply) => {
+  if (error.validation) {
+    reply.status(400).send({
+      success: false,
+      error: schemaErrorMessageGenerator(error.validation)
+    });
+
+    return;
+  }
+
+  reply
+    .status(error.statusCode || 500)
+    .send({ success: false, error: error.message });
+});
+
+fastify.get('/health-check', async () => {
   return { status: 'OK' };
 });
 
-for (const schema of userSchemas) {
-  server.addSchema(schema);
-}
-
-server.register(userRoutes, { prefix: 'api/users' });
+await fastify.register(userRoutes, { prefix: 'api/users' });
 
 async function main() {
   try {
-    await server.listen({ port: 3000, host: '0.0.0.0' });
+    await fastify.listen({ port: 3000, host: '0.0.0.0' });
     console.log('Server up.');
   } catch (error) {
     console.log(error);
@@ -24,4 +45,4 @@ async function main() {
   }
 }
 
-await main();
+main();

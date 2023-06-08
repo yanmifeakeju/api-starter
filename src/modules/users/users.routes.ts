@@ -1,28 +1,30 @@
 import { FastifyInstance } from 'fastify';
 import { registerUserHandler } from './users.controllers.js';
-import { register, buildJsonSchemas } from 'fastify-zod';
 import {
   CreateUserResponseSchema,
   CreateUserInputSchema
 } from './users.schema.js';
+import { BaseResponseSchema } from '../../utils/schema/index.js';
+import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
-export const userRoutes = async (server: FastifyInstance) => {
-  await register(server, {
-    jsonSchemas: buildJsonSchemas(
-      {
-        CreateUserInputSchema,
-        CreateUserResponseSchema
-      },
-      { errorMessages: true }
-    )
-  });
-  server.zod.post(
+export const userRoutes = async (fastify: FastifyInstance) => {
+  const server = fastify.withTypeProvider<TypeBoxTypeProvider>();
+  server.post(
     '/',
+
     {
-      operationId: 'createUser',
-      body: 'CreateUserInputSchema',
-      reply: 'CreateUserResponseSchema'
+      schema: {
+        body: CreateUserInputSchema,
+        response: {
+          201: Type.Union([
+            BaseResponseSchema,
+            Type.Object({ data: CreateUserResponseSchema })
+          ]),
+          422: BaseResponseSchema
+        }
+      }
     },
+
     registerUserHandler
   );
 

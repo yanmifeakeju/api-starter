@@ -3,18 +3,20 @@ import { hashPassword } from '../../utils/encryption/password.js';
 import { CreateUserInput, CreateUserResponse } from './users.schema.js';
 
 export const createUser = async (
-  input: CreateUserInput
+  data: CreateUserInput
 ): Promise<CreateUserResponse> => {
+  const existingUser = await prisma.user.findFirst({
+    where: { email: data.email }
+  });
+
+  if (existingUser) throw new Error('Email already taken.');
+
   const user = await prisma.user.create({
     data: {
-      ...input,
-      password: await hashPassword(input.password)
+      ...data,
+      password: await hashPassword(data.password)
     }
   });
 
-  return {
-    success: true,
-    message: 'User created successfully',
-    data: { email: user.email, username: user.username }
-  };
+  return { email: user.email, username: user.username };
 };

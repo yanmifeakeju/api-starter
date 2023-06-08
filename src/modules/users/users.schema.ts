@@ -1,30 +1,14 @@
-import { z } from 'zod';
-import { buildJsonSchemas } from 'fastify-zod';
-import { baseResponseSchema } from '../../utils/schema/response.schema.js';
+import { Type, Static } from '@sinclair/typebox';
 
-export const CreateUserInputSchema = z.object({
-  email: z
-    .string({
-      required_error: 'Email is required',
-      invalid_type_error: 'Email must be a string'
-    })
-    .email({ message: 'Please provide a valid email' }),
-  username: z.string(),
-  password: z
-    .string({
-      required_error: 'Password is required',
-      invalid_type_error: 'Password must be a string'
-    })
-    .min(8)
+export const CreateUserInputSchema = Type.Object({
+  email: Type.String({ format: 'email' }),
+  username: Type.String(),
+  password: Type.String({ minLength: 8 })
 });
 
-export const CreateUserResponseSchema = baseResponseSchema.merge(
-  z.object({
-    data: CreateUserInputSchema.omit({
-      password: true
-    })
-  })
-);
+export const CreateUserResponseSchema = Type.Omit(CreateUserInputSchema, [
+  'password'
+]);
 
-export type CreateUserInput = z.infer<typeof CreateUserInputSchema>;
-export type CreateUserResponse = z.infer<typeof CreateUserResponseSchema>;
+export type CreateUserInput = Static<typeof CreateUserInputSchema>;
+export type CreateUserResponse = Static<typeof CreateUserResponseSchema>;

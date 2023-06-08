@@ -10,8 +10,9 @@ export const registerUserHandler = async (
 ) => {
   const { body } = request;
   try {
-    const user = await createUser(body);
-    return reply.code(201).send(user);
+    const result = await createUser(body);
+
+    return reply.code(201).send({ success: true, message: '', data: result });
   } catch (error) {
     return reply
       .code(500)

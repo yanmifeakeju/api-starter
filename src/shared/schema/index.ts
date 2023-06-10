@@ -14,11 +14,11 @@ export function StringEnum<T extends string[]>(values: [...T]) {
 }
 
 export const BaseResponseSchema = Type.Object({
-  success: Type.Boolean(),
-  message: Type.Literal(true)
+  success: Type.Literal(true),
+  message: Type.String()
 });
 
 export const ErrorResponseSchema = Type.Object({
-  success: Type.Boolean(),
-  message: Type.Literal(false)
+  success: Type.Literal(false),
+  message: Type.String()
 });

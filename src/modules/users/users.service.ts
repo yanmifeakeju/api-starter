@@ -1,4 +1,4 @@
-import { prisma } from '../../utils/database/prisma.js';
+import { prisma } from '../../shared/database/prisma.js';
 import { hashPassword } from '../../utils/encryption/password.js';
 import { CreateUserInput, CreateUserResponse } from './users.schema.js';
 

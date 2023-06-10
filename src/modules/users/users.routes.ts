@@ -4,7 +4,7 @@ import {
   CreateUserResponseSchema,
   CreateUserInputSchema
 } from './users.schema.js';
-import { BaseResponseSchema } from '../../utils/schema/index.js';
+import { BaseResponseSchema } from '../../shared/schema/index.js';
 import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
@@ -16,7 +16,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       schema: {
         body: CreateUserInputSchema,
         response: {
-          201: Type.Union([
+          201: Type.Intersect([
             BaseResponseSchema,
             Type.Object({ data: CreateUserResponseSchema })
           ]),

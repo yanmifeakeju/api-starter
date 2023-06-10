@@ -1,6 +1,6 @@
 import envSchema from 'env-schema';
 import { Static, Type } from '@sinclair/typebox';
-import { StringEnum } from '../utils/schema/index.js';
+import { StringEnum } from '../shared/schema/index.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);

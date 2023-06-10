@@ -9,13 +9,8 @@ export const registerUserHandler = async (
   reply: FastifyReply
 ) => {
   const { body } = request;
-  try {
-    const result = await createUser(body);
 
-    return reply.code(201).send({ success: true, message: '', data: result });
-  } catch (error) {
-    return reply
-      .code(500)
-      .send({ success: false, message: 'Internal Server Error' });
-  }
+  const result = await createUser(body);
+
+  return reply.code(201).send({ success: true, message: '', data: result });
 };

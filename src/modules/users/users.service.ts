@@ -1,5 +1,6 @@
 import { prisma } from '../../shared/database/prisma.js';
-import { hashPassword } from '../../utils/encryption/password.js';
+import { AppError } from '../../shared/error/AppError.js';
+import { hashPassword } from '../../utils/password.js';
 import { CreateUserInput, CreateUserResponse } from './users.schema.js';
 
 export const createUser = async (
@@ -9,7 +10,8 @@ export const createUser = async (
     where: { email: data.email }
   });
 
-  if (existingUser) throw new Error('Email already taken.');
+  if (existingUser)
+    throw new AppError('DUPLICATE_ENTRY', 'Email already taken.');
 
   const user = await prisma.user.create({
     data: {

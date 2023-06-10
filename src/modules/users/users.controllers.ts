@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { createUser } from './users.service.js';
 import { CreateUserInput } from './users.schema.js';
+import { wrapService } from '../../utils/service-wrapper.js';
 
 export const registerUserHandler = async (
   request: FastifyRequest<{
@@ -10,7 +11,8 @@ export const registerUserHandler = async (
 ) => {
   const { body } = request;
 
-  const result = await createUser(body);
+  const wrappedResponse = wrapService(createUser, body);
+  const response = await wrappedResponse;
 
-  return reply.code(201).send({ success: true, message: '', data: result });
+  return reply.code(201).send({ success: true, message: '', data: response });
 };

@@ -1,17 +1,43 @@
 import { Type, Static } from '@sinclair/typebox';
+import { DateSchema } from '../../shared/schema/index.js';
 
-export const CreateUserInputSchema = Type.Object(
+/**
+ * model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  username   String    @unique
+  password   String
+  created_at DateTime  @default(now())
+  products   Product[]
+}
+ */
+
+export const UserSchema = Type.Object(
   {
+    id: Type.Number(),
+    userId: Type.String({ format: 'uuid' }),
     email: Type.String({ format: 'email' }),
     username: Type.String(),
-    password: Type.String({ minLength: 8 })
+    password: Type.String({ minLength: 8 }),
+    createdAt: DateSchema
   },
   { additionalProperties: false }
 );
 
-export const CreateUserResponseSchema = Type.Omit(CreateUserInputSchema, [
+export const CreateUserInputSchema = Type.Pick(UserSchema, [
+  'email',
+  'password',
+  'username'
+]);
+
+export const UserProfileSchema = Type.Omit(UserSchema, ['id', 'password']);
+
+export const LoginUserInputSchema = Type.Pick(UserSchema, [
+  'email',
   'password'
 ]);
 
+export type User = Static<typeof UserSchema>;
 export type CreateUserInput = Static<typeof CreateUserInputSchema>;
-export type CreateUserResponse = Static<typeof CreateUserResponseSchema>;
+export type UserProfile = Static<typeof UserProfileSchema>;
+export type LoginUserInput = Static<typeof LoginUserInputSchema>;

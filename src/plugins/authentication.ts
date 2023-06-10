@@ -5,7 +5,10 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 
 export default fp(async function (fastify, opts) {
   fastify.register(fastifyJwt, {
-    secret: env.AUTH_JWT_SECRET
+    secret: env.AUTH_JWT_SECRET,
+    sign: {
+      expiresIn: 3600
+    }
   });
 
   fastify.decorate(

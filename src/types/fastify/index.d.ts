@@ -14,11 +14,15 @@ import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 // Global augmentation, as suggested by
 // https://www.fastify.io/docs/latest/Reference/TypeScript/#creating-a-typescript-fastify-plugin
 declare module 'fastify' {
-  interface FastifyInstance {}
-
-  interface FastifyRequest {
-    authenticate: string;
+  export interface FastifyInstance<
+    HttpServer = Server,
+    HttpRequest = IncomingMessage,
+    HttpResponse = ServerResponse
+  > {
+    authenticate(): void;
   }
+
+  export interface FastifyRequest {}
 }
 
 export type FastifyRequestTypebox<TSchema extends FastifySchema> =

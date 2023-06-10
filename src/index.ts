@@ -1,15 +1,15 @@
 import Fastify from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { userRoutes } from './modules/users/users.routes.js';
-import { createRequire } from 'module';
-import { env } from './config/env.js';
 import { schemaErrorMessageGenerator } from './utils/error-message.js';
 import { AppError } from './shared/error/AppError.js';
 import { mapAppErrorToApiError } from './utils/errors.js';
-
-const require = createRequire(import.meta.url);
+import authentication from './plugins/authentication.js';
+import { env } from './config/env.js';
 
 const server = Fastify().withTypeProvider<TypeBoxTypeProvider>();
+
+await server.register(authentication);
 
 server.setErrorHandler((error, request, reply) => {
   let err = {
@@ -47,3 +47,5 @@ async function main() {
 }
 
 main();
+
+export { server };

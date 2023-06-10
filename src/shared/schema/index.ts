@@ -15,5 +15,10 @@ export function StringEnum<T extends string[]>(values: [...T]) {
 
 export const BaseResponseSchema = Type.Object({
   success: Type.Boolean(),
-  message: Type.String()
+  message: Type.Literal(true)
+});
+
+export const ErrorResponseSchema = Type.Object({
+  success: Type.Boolean(),
+  message: Type.Literal(false)
 });

@@ -7,7 +7,7 @@ export default fp(async function (fastify, opts) {
   fastify.register(fastifyJwt, {
     secret: env.AUTH_JWT_SECRET,
     sign: {
-      expiresIn: 3600
+      expiresIn: env.JWT_EXPIRES_IN
     }
   });
 

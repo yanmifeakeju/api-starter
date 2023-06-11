@@ -1,16 +1,7 @@
 import { Type, Static } from '@sinclair/typebox';
 import { DateSchema } from '../../shared/schema/index.js';
 
-/**
- * model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
-  username   String    @unique
-  password   String
-  created_at DateTime  @default(now())
-  products   Product[]
-}
- */
+
 
 export const UserSchema = Type.Object(
   {

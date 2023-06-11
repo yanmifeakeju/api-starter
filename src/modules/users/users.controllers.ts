@@ -53,7 +53,7 @@ export const loginHandler = async (
 
   return reply.code(200).send({
     success: true,
-    message: '',
+    message: 'Successfully logged in.',
     data: {
       session: {
         authToken: await reply.jwtSign({ userId: user.userId })

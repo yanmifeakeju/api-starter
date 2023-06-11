@@ -6,10 +6,12 @@ import { AppError } from './shared/error/AppError.js';
 import { mapAppErrorToApiError } from './utils/errors.js';
 import authentication from './plugins/authentication.js';
 import { env } from './config/env.js';
+import swagger from './plugins/swagger.js';
 
 const server = Fastify().withTypeProvider<TypeBoxTypeProvider>();
 
 await server.register(authentication);
+await server.register(swagger);
 
 server.setErrorHandler((error, request, reply) => {
   let err = {
@@ -36,16 +38,17 @@ server.get('/health-check', async () => {
 
 await server.register(userRoutes, { prefix: 'api/users' });
 
+await server.ready();
+// server.swagger();
+
 async function main() {
   try {
     await server.listen({ port: env.SERVER_PORT, host: '0.0.0.0' });
-    console.log('Server up.');
+    console.info('Server up.');
   } catch (error) {
-    console.log(error);
+    console.error(error);
     process.exit(1);
   }
 }
 
 main();
-
-export { server };

@@ -9,7 +9,8 @@ const ConfigSchema = Type.Object({
   NODE_ENV: StringEnum(['development', 'production', 'test']),
   SERVER_PORT: Type.Number(),
   DATABASE_URL: Type.String(),
-  AUTH_JWT_SECRET: Type.String()
+  AUTH_JWT_SECRET: Type.String(),
+  JWT_EXPIRES_IN: Type.Number()
 });
 
 type Config = Static<typeof ConfigSchema>;

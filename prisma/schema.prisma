@@ -11,22 +11,12 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  user_id    String    @unique @default(uuid()) @db.Uuid
-  email      String    @unique
-  username   String    @unique
-  password   String
-  created_at DateTime  @default(now())
-  products   Product[]
-}
-
-model Product {
   id         Int      @id @default(autoincrement())
+  user_id    String   @unique @default(uuid()) @db.Uuid
+  email      String   @unique
+  username   String   @unique
+  password   String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  title      String   @db.VarChar(255)
-  content    String?
-  price      Decimal  @db.Decimal(15, 2)
-  owner      User     @relation(fields: [owner_id], references: [id])
-  owner_id   Int
+
+  @@map("users")
 }

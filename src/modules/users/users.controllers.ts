@@ -16,7 +16,7 @@ export const registerUserHandler = async (
 
   return reply.code(201).send({
     success: true,
-    message: '',
+    message: 'User registered successfully.',
     data: {
       session: {
         authToken: await reply.jwtSign({ userId: response.userId })

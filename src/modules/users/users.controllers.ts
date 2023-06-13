@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { createUser, findUser, validateAuthCreds } from './users.service.js';
 import { CreateUserInput } from './users.schema.js';
 import { wrapService } from '../../utils/service-wrapper.js';
+import { mapAppErrorToApiError } from '../../utils/errors.js';
+import { AppError } from '../../libs/error/AppError.js';
 
 export const registerUserHandler = async (
   request: FastifyRequest<{

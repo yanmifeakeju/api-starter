@@ -1,7 +1,5 @@
 import { Type, Static } from '@sinclair/typebox';
-import { DateSchema } from '../../shared/schema/index.js';
-
-
+import { DateSchema } from '../../libs/schema/index.js';
 
 export const UserSchema = Type.Object(
   {

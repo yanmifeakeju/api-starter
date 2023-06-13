@@ -1,4 +1,4 @@
-import { AppError } from '../shared/error/AppError.js';
+import { AppError } from '../libs/error/AppError.js';
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
   switch (value) {

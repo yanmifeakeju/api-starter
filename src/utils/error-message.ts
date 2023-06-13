@@ -1,6 +1,7 @@
+import { DefinedError } from 'ajv';
 import { FastifySchemaValidationError } from 'fastify/types/schema.js';
 export function schemaErrorMessageGenerator(
-  err: FastifySchemaValidationError[]
+  err: FastifySchemaValidationError[] | DefinedError[]
 ) {
   for (const error of err) {
     switch (error.keyword) {

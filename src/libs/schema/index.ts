@@ -20,5 +20,5 @@ export const BaseResponseSchema = Type.Object({
 
 export const ErrorResponseSchema = Type.Object({
   success: Type.Literal(false),
-  message: Type.String()
+  error: Type.String()
 });

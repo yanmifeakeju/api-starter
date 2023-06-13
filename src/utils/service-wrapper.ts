@@ -1,5 +1,5 @@
 import { env } from '../config/env.js';
-import { reportPrismaError } from '../shared/database/prisma.js';
+import { reportPrismaError } from '../libs/prisma/index.js';
 
 export async function wrapService<T extends (...args: any[]) => Promise<any>>(
   func: T,

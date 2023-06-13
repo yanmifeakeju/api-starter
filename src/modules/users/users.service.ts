@@ -1,12 +1,21 @@
-import { prisma } from '../../shared/database/prisma.js';
-import { AppError } from '../../shared/error/AppError.js';
+import { prisma } from '../../libs/prisma/index.js';
+import { AppError } from '../../libs/error/AppError.js';
 import { OnlyOneProperty } from '../../types/util-types/index.js';
 import { hashPassword, verifyPassword } from '../../utils/password.js';
-import { CreateUserInput, UserProfile } from './users.schema.js';
+import {
+  CreateUserInput,
+  CreateUserInputSchema,
+  UserProfile
+} from './users.schema.js';
+import { TypeCompiler } from '@sinclair/typebox/compiler';
+import { schemaValidator } from '../../utils/validator.js';
 
+const assertIsValidCreateUserInput = schemaValidator(CreateUserInputSchema);
 export const createUser = async (
   data: CreateUserInput
 ): Promise<UserProfile> => {
+  assertIsValidCreateUserInput(data);
+
   const existingUser = await prisma.user.findFirst({
     where: {
       OR: [

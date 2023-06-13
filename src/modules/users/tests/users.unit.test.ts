@@ -6,6 +6,9 @@ import { hashPassword } from '../../../utils/password.js';
 import { prisma } from '../../../libs/prisma/__mocks__/index.js';
 
 vi.mock('../../../libs/prisma/index.js');
+vi.mock('../../../utils/password.js', () => ({
+  hashPassword: vi.fn()
+}));
 
 describe('createUser()', () => {
   it('should throw error when called with empty fields', async () => {
@@ -30,7 +33,7 @@ describe('createUser()', () => {
       email: newUser.email,
       username: newUser.username,
       id: 1,
-      password: await hashPassword(newUser.password),
+      password: newUser.password,
       user_id: faker.string.uuid()
     };
 
@@ -48,5 +51,6 @@ describe('createUser()', () => {
 
     expect(prisma.user.findFirst).toHaveBeenCalledOnce();
     expect(prisma.user.create).toHaveBeenCalledOnce();
+    expect(hashPassword).toHaveBeenNthCalledWith(1, newUser.password);
   });
 });

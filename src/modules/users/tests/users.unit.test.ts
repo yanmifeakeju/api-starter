@@ -1,14 +1,27 @@
-import { describe, expect, vi, it, beforeEach, afterEach } from 'vitest';
+import {
+  describe,
+  expect,
+  vi,
+  it,
+  beforeEach,
+  afterEach,
+  afterAll
+} from 'vitest';
 import { createUser } from '../users.service.js';
 import { CreateUserInput } from '../users.schema.js';
 import { faker } from '@faker-js/faker';
 import { hashPassword } from '../../../utils/password.js';
 import { prisma } from '../../../libs/prisma/__mocks__/index.js';
+import { AppError } from '../../../libs/error/AppError.js';
 
 vi.mock('../../../libs/prisma/index.js');
 vi.mock('../../../utils/password.js', () => ({
   hashPassword: vi.fn()
 }));
+
+afterAll(() => {
+  vi.resetAllMocks();
+});
 
 describe('createUser()', () => {
   it('should throw error when called with empty fields', async () => {
@@ -18,7 +31,42 @@ describe('createUser()', () => {
       username: ''
     };
 
-    expect(() => createUser(newUser)).rejects.toThrow();
+    expect(() => createUser(newUser)).rejects.toThrow(AppError);
+  });
+
+  it('should throw duplicate error when user already exists', async () => {
+    const newUser: CreateUserInput = {
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+      username: faker.internet.userName()
+    };
+
+    const createdUser = {
+      created_at: new Date(),
+      email: newUser.email,
+      username: newUser.username,
+      id: 1,
+      password: newUser.password,
+      user_id: faker.string.uuid()
+    };
+
+    prisma.user.findFirst.mockResolvedValueOnce(createdUser);
+
+    expect(() => createUser(newUser)).rejects.toThrow(AppError);
+    expect(prisma.user.findFirst).toHaveBeenCalledOnce();
+    expect(prisma.user.create).not.toHaveBeenCalledOnce();
+    expect(prisma.user.findFirst).toHaveBeenNthCalledWith(1, {
+      where: {
+        OR: [
+          {
+            email: newUser.email
+          },
+          {
+            username: newUser.username
+          }
+        ]
+      }
+    });
   });
 
   it('should should return the correct user output', async () => {

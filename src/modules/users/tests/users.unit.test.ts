@@ -1,12 +1,4 @@
-import {
-  describe,
-  expect,
-  vi,
-  it,
-  beforeEach,
-  afterEach,
-  afterAll
-} from 'vitest';
+import { describe, expect, vi, it, afterAll } from 'vitest';
 import { createUser } from '../users.service.js';
 import { CreateUserInput } from '../users.schema.js';
 import { faker } from '@faker-js/faker';

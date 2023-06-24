@@ -57,16 +57,7 @@ export const findUser = serviceAsyncWrapper(
     assertIsValidFindUserInput(data);
 
     const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            email: data.email
-          },
-          {
-            user_id: data.userId
-          }
-        ]
-      }
+      where: { ...data }
     });
 
     if (!user) throw new AppError('NOT_FOUND', 'User not found.');

@@ -16,82 +16,87 @@ afterAll(() => {
   vi.resetAllMocks();
 });
 
-describe('createUser()', () => {
-  it('should throw error when called with empty fields', async () => {
-    const newUser: CreateUserInput = {
-      email: '',
-      password: '',
-      username: ''
-    };
+describe('User Service', () => {
+  describe('createUser()', () => {
+    it('should throw error when called with empty fields', async () => {
+      const newUser: CreateUserInput = {
+        email: '',
+        password: '',
+        username: ''
+      };
 
-    expect(() => createUser(newUser)).rejects.toThrow(AppError);
-  });
+      expect(() => createUser(newUser)).rejects.toThrow(AppError);
+    });
 
-  it('should throw duplicate error when user already exists', async () => {
-    const newUser: CreateUserInput = {
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-      username: faker.internet.userName()
-    };
+    it('should throw duplicate error when user already exists', async () => {
+      const newUser: CreateUserInput = {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        username: faker.internet.userName()
+      };
 
-    const createdUser = {
-      created_at: new Date(),
-      email: newUser.email,
-      username: newUser.username,
-      id: 1,
-      password: newUser.password,
-      user_id: faker.string.uuid()
-    };
+      const createdUser = {
+        created_at: new Date(),
+        email: newUser.email,
+        username: newUser.username,
+        id: 1,
+        password: newUser.password,
+        user_id: faker.string.uuid()
+      };
 
-    prisma.user.findFirst.mockResolvedValueOnce(createdUser);
+      prisma.user.findFirst.mockResolvedValueOnce(createdUser);
 
-    expect(() => createUser(newUser)).rejects.toThrow(AppError);
-    expect(prisma.user.findFirst).toHaveBeenCalledOnce();
-    expect(prisma.user.create).not.toHaveBeenCalledOnce();
-    expect(prisma.user.findFirst).toHaveBeenNthCalledWith(1, {
-      where: {
-        OR: [
-          {
-            email: newUser.email
-          },
-          {
-            username: newUser.username
-          }
-        ]
-      }
+      expect(() => createUser(newUser)).rejects.toThrow(AppError);
+      expect(prisma.user.findFirst).toHaveBeenCalledOnce();
+      expect(prisma.user.create).not.toHaveBeenCalledOnce();
+      expect(prisma.user.findFirst).toHaveBeenNthCalledWith(1, {
+        where: {
+          OR: [
+            {
+              email: newUser.email
+            },
+            {
+              username: newUser.username
+            }
+          ]
+        }
+      });
+    });
+
+    it('should should return the correct user output', async () => {
+      const newUser: CreateUserInput = {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        username: faker.internet.userName()
+      };
+
+      const createdUser = {
+        created_at: new Date(),
+        email: newUser.email,
+        username: newUser.username,
+        id: randomInt(1000),
+        password: newUser.password,
+        user_id: faker.string.uuid()
+      };
+
+      prisma.user.findFirst.mockResolvedValueOnce(null);
+      prisma.user.create.mockResolvedValueOnce(createdUser);
+
+      const user = await createUser(newUser);
+
+      expect(user).toStrictEqual({
+        userId: createdUser.user_id,
+        email: createdUser.email,
+        username: createdUser.username,
+        createdAt: createdUser.created_at
+      });
+
+      expect(prisma.user.findFirst).toHaveBeenCalledOnce();
+      expect(prisma.user.create).toHaveBeenCalledOnce();
+      expect(hashPassword).toHaveBeenNthCalledWith(1, newUser.password);
     });
   });
 
-  it('should should return the correct user output', async () => {
-    const newUser: CreateUserInput = {
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-      username: faker.internet.userName()
-    };
-
-    const createdUser = {
-      created_at: new Date(),
-      email: newUser.email,
-      username: newUser.username,
-      id: randomInt(1000),
-      password: newUser.password,
-      user_id: faker.string.uuid()
-    };
-
-    prisma.user.findFirst.mockResolvedValueOnce(null);
-    prisma.user.create.mockResolvedValueOnce(createdUser);
-
-    const user = await createUser(newUser);
-
-    expect(user).toStrictEqual({
-      userId: createdUser.user_id,
-      email: createdUser.email,
-      username: createdUser.username,
-      createdAt: createdUser.created_at
-    });
-
-    expect(prisma.user.findFirst).toHaveBeenCalledOnce();
-    expect(prisma.user.create).toHaveBeenCalledOnce();
-    expect(hashPassword).toHaveBeenNthCalledWith(1, newUser.password);
-  });
+  describe.todo('findUser()', () => {});
+  describe.todo('validateAuthCreds()', () => {});
 });

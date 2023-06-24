@@ -1,4 +1,6 @@
-import { AppError } from '../libs/error/AppError.js';
+import { env } from '../config/env.js';
+import { AppError } from '../shared/error/AppError.js';
+import { reportPrismaError } from './prismaError.js';
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
   switch (value) {
@@ -15,6 +17,7 @@ const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
     case 'TOO_MANY_REQUESTS':
       return 429;
     case 'FATAL':
+    case 'DATABASE_ERROR':
       return 500;
 
     default:
@@ -27,4 +30,10 @@ export const mapAppErrorToApiError = (error: AppError) => {
     statusCode: convertAppErrorTypeToApiStatusCode(error.errorType),
     message: error.message
   };
+};
+
+export const handleAppError = (error: Error) => {
+  if (env.NODE_ENV === 'development') console.error(error);
+  reportPrismaError(error as Error);
+  throw error;
 };

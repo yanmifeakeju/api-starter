@@ -12,7 +12,7 @@ import {
 import {
   BaseResponseSchema,
   ErrorResponseSchema
-} from '../../libs/schema/index.js';
+} from '../../shared/schema/index.js';
 import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
 export const userRoutes = async (fastify: FastifyInstance) => {

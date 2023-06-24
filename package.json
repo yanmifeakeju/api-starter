@@ -6,7 +6,7 @@
   "type": "module",
   "types": "index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc -p tsconfig.build.json -w",
     "test:integration": "vitest run tests/**",
     "test:unit": "vitest watch src/**",
@@ -26,10 +26,13 @@
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.1",
     "bcryptjs": "^2.4.3",
+    "bullmq": "^4.1.0",
     "dotenv": "^16.1.4",
     "env-schema": "^5.2.0",
     "fastify": "^4.15.0",
-    "fastify-plugin": "^4.5.0"
+    "fastify-plugin": "^4.5.0",
+    "ioredis": "^5.3.2",
+    "resend": "^0.15.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",

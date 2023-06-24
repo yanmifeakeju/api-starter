@@ -1,6 +1,6 @@
 import envSchema from 'env-schema';
 import { Static, Type } from '@sinclair/typebox';
-import { StringEnum } from '../libs/schema/index.js';
+import { StringEnum } from '../shared/schema/index.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -10,7 +10,8 @@ const ConfigSchema = Type.Object({
   SERVER_PORT: Type.Number(),
   DATABASE_URL: Type.String(),
   AUTH_JWT_SECRET: Type.String(),
-  JWT_EXPIRES_IN: Type.Number()
+  JWT_EXPIRES_IN: Type.Number(),
+  RESEND_API_KEY: Type.String()
 });
 
 type Config = Static<typeof ConfigSchema>;

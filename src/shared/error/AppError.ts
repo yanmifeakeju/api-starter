@@ -5,7 +5,8 @@ const appErrorType = {
   TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
-  FATAL: 'FATAL'
+  FATAL: 'FATAL',
+  DATABASE_ERROR: 'DATABASE_ERROR'
 } as const;
 
 type AppErrorType = (typeof appErrorType)[keyof typeof appErrorType];

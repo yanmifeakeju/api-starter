@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { userRoutes } from './modules/users/users.routes.js';
 import { schemaErrorMessageGenerator } from './utils/error-message.js';
-import { AppError } from './libs/error/AppError.js';
+import { AppError } from './shared/error/AppError.js';
 import { mapAppErrorToApiError } from './utils/errors.js';
 import authentication from './plugins/authentication.js';
 import { env } from './config/env.js';

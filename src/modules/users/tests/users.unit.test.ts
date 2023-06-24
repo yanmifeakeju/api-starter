@@ -4,7 +4,8 @@ import { CreateUserInput } from '../users.schema.js';
 import { faker } from '@faker-js/faker';
 import { hashPassword } from '../../../utils/password.js';
 import { prisma } from '../../../libs/prisma/__mocks__/index.js';
-import { AppError } from '../../../libs/error/AppError.js';
+import { AppError } from '../../../shared/error/AppError.js';
+import { randomInt } from 'crypto';
 
 vi.mock('../../../libs/prisma/index.js');
 vi.mock('../../../utils/password.js', () => ({
@@ -72,7 +73,7 @@ describe('createUser()', () => {
       created_at: new Date(),
       email: newUser.email,
       username: newUser.username,
-      id: 1,
+      id: randomInt(1000),
       password: newUser.password,
       user_id: faker.string.uuid()
     };

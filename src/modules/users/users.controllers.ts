@@ -1,9 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { createUser, findUser, validateAuthCreds } from './users.service.js';
 import { CreateUserInput } from './users.schema.js';
-import { wrapService } from '../../utils/service-wrapper.js';
-import { mapAppErrorToApiError } from '../../utils/errors.js';
-import { AppError } from '../../libs/error/AppError.js';
 
 export const registerUserHandler = async (
   request: FastifyRequest<{
@@ -13,8 +10,7 @@ export const registerUserHandler = async (
 ) => {
   const { body } = request;
 
-  const wrappedResponse = wrapService(createUser, body);
-  const response = await wrappedResponse;
+  const response = await createUser(body);
 
   return reply.code(201).send({
     success: true,
@@ -32,8 +28,7 @@ export const userProfileHandler = async (
   reply: FastifyReply
 ) => {
   const { user } = request as { user: { userId: string } };
-  const wrappedResponse = wrapService(findUser, user);
-  const response = await wrappedResponse;
+  const response = await findUser(user);
   reply
     .code(200)
     .send({ success: true, message: 'Fetched user profile', data: response });
@@ -46,12 +41,8 @@ export const loginHandler = async (
   reply: FastifyReply
 ) => {
   const { email, password } = request.body;
-  const wrappedValidateAuthCreds = wrapService(validateAuthCreds, {
-    email,
-    password
-  });
 
-  const user = await wrappedValidateAuthCreds;
+  const user = await validateAuthCreds({ email, password });
 
   return reply.code(200).send({
     success: true,

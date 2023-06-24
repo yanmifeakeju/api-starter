@@ -1,7 +1,7 @@
 import addFormats from 'ajv-formats';
 import Ajv, { AnySchema, DefinedError } from 'ajv';
 import { schemaErrorMessageGenerator } from './error-message.js';
-import { AppError } from '../libs/error/AppError.js';
+import { AppError } from '../shared/error/AppError.js';
 
 export const ajv = addFormats
   .default(new Ajv.default({}), [

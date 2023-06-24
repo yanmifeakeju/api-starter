@@ -1,97 +1,103 @@
 import { prisma } from '../../libs/prisma/index.js';
-import { AppError } from '../../libs/error/AppError.js';
+import { AppError } from '../../shared/error/AppError.js';
 import { OnlyOneProperty } from '../../types/util-types/index.js';
 import { hashPassword, verifyPassword } from '../../utils/password.js';
 import {
   CreateUserInput,
   CreateUserInputSchema,
+  FindUserInputSchema,
   UserProfile
 } from './users.schema.js';
-import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { schemaValidator } from '../../utils/validator.js';
+import { serviceAsyncWrapper } from '../../utils/service-wrapper.js';
 
 const assertIsValidCreateUserInput = schemaValidator(CreateUserInputSchema);
-export const createUser = async (
-  data: CreateUserInput
-): Promise<UserProfile> => {
-  assertIsValidCreateUserInput(data);
+const assertIsValidFindUserInput = schemaValidator(FindUserInputSchema);
 
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      OR: [
-        {
-          email: data.email
-        },
-        {
-          username: data.username
-        }
-      ]
-    }
-  });
+export const createUser = serviceAsyncWrapper(
+  async (data: CreateUserInput): Promise<UserProfile> => {
+    assertIsValidCreateUserInput(data);
 
-  if (existingUser)
-    throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.');
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            email: data.email
+          },
+          {
+            username: data.username
+          }
+        ]
+      }
+    });
 
-  const user = await prisma.user.create({
-    data: {
-      ...data,
-      password: await hashPassword(data.password)
-    }
-  });
+    if (existingUser)
+      throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.');
 
-  return {
-    email: user.email,
-    username: user.username,
-    userId: user.user_id,
-    createdAt: user.created_at
-  };
-};
+    const user = await prisma.user.create({
+      data: {
+        ...data,
+        password: await hashPassword(data.password)
+      }
+    });
 
-export const findUser = async (
-  data: OnlyOneProperty<{ userId: string; email: string }>
-): Promise<UserProfile> => {
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        {
-          email: data.email
-        },
-        {
-          user_id: data.userId
-        }
-      ]
-    }
-  });
+    return {
+      email: user.email,
+      username: user.username,
+      userId: user.user_id,
+      createdAt: user.created_at
+    };
+  }
+);
 
-  if (!user) throw new AppError('NOT_FOUND', 'User not found.');
+export const findUser = serviceAsyncWrapper(
+  async (
+    data: OnlyOneProperty<{ userId: string; email: string }>
+  ): Promise<UserProfile> => {
+    assertIsValidFindUserInput(data);
 
-  return {
-    email: user.email,
-    userId: user.user_id,
-    username: user.username,
-    createdAt: user.created_at
-  };
-};
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            email: data.email
+          },
+          {
+            user_id: data.userId
+          }
+        ]
+      }
+    });
 
-export const validateAuthCreds = async (data: {
-  email: string;
-  password: string;
-}): Promise<UserProfile> => {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: data.email
-    }
-  });
+    if (!user) throw new AppError('NOT_FOUND', 'User not found.');
 
-  if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+    return {
+      email: user.email,
+      userId: user.user_id,
+      username: user.username,
+      createdAt: user.created_at
+    };
+  }
+);
 
-  const isPassword = await verifyPassword(data.password, user.password);
-  if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+export const validateAuthCreds = serviceAsyncWrapper(
+  async (data: { email: string; password: string }): Promise<UserProfile> => {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: data.email
+      }
+    });
 
-  return {
-    email: user.email,
-    userId: user.user_id,
-    username: user.username,
-    createdAt: user.created_at
-  };
-};
+    if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+
+    const isPassword = await verifyPassword(data.password, user.password);
+    if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+
+    return {
+      email: user.email,
+      userId: user.user_id,
+      username: user.username,
+      createdAt: user.created_at
+    };
+  }
+);

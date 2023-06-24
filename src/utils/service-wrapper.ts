@@ -1,16 +1,15 @@
 import { env } from '../config/env.js';
-import { reportPrismaError } from '../libs/prisma/index.js';
+import { handleAppError } from './errors.js';
+import { reportPrismaError } from './prismaError.js';
 
-export async function wrapService<T extends (...args: any[]) => Promise<any>>(
-  func: T,
-  ...args: Parameters<T>
-): Promise<ReturnType<T>> {
-  try {
-    return await func(...args);
-  } catch (error) {
-    if (env.NODE_ENV === 'development') console.error(error);
-
-    reportPrismaError(error as Error);
-    throw error;
-  }
+export function serviceAsyncWrapper<T>(
+  asyncFunction: (...args: any[]) => Promise<T>
+) {
+  return async (...args: any[]): Promise<T> => {
+    try {
+      return await asyncFunction(...args);
+    } catch (error) {
+      return handleAppError(error as Error);
+    }
+  };
 }

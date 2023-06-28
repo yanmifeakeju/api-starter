@@ -1,13 +1,8 @@
-import { Job, Worker } from 'bullmq';
+import { Processor, Worker } from 'bullmq';
 
-const worker = new Worker('foo', async (job: Job) => {
-  console.log(job.data);
-});
+export const createWorkerHandler = (jobName: string, handler: Processor) => {
+  const worker = new Worker(jobName, handler);
 
-worker.on('completed', (job) => {
-  console.log(`${job.id} has completed`);
-});
-
-worker.on('failed', (job) => {
-  console.log(`${job?.id} has failed`);
-});
+  worker.on('completed', (job) => console.log(`${job.id} has completed`));
+  worker.on('failed', (job) => console.log(`${job?.id} has failed`));
+};

@@ -1,6 +1,10 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { createUser, findUser, validateAuthCreds } from './users.service.js';
-import { CreateUserInput } from './users.schema.js';
+import {
+  createUser,
+  findUser,
+  authenticateUser
+} from '../../../modules/users/users.service.js';
+import { CreateUserInput } from '../../../modules/users/users.schema.js';
 
 export const registerUserHandler = async (
   request: FastifyRequest<{
@@ -42,14 +46,14 @@ export const loginHandler = async (
 ) => {
   const { email, password } = request.body;
 
-  const user = await validateAuthCreds({ email, password });
+  const userId = await authenticateUser({ email, password });
 
   return reply.code(200).send({
     success: true,
     message: 'Successfully logged in.',
     data: {
       session: {
-        authToken: await reply.jwtSign({ userId: user.userId })
+        authToken: await reply.jwtSign({ userId })
       }
     }
   });

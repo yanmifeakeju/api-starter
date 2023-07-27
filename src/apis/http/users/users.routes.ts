@@ -7,12 +7,12 @@ import {
 import {
   UserProfileSchema,
   CreateUserInputSchema,
-  LoginUserInputSchema
-} from './users.schema.js';
+  UserAuthSchema
+} from '../../../modules/users/users.schema.js';
 import {
   BaseResponseSchema,
   ErrorResponseSchema
-} from '../../shared/schema/index.js';
+} from '../../../shared/schema/index.js';
 import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
@@ -66,7 +66,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
 
     {
       schema: {
-        body: LoginUserInputSchema,
+        body: UserAuthSchema,
         response: {
           200: Type.Intersect([
             BaseResponseSchema,

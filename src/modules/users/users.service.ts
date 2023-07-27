@@ -10,6 +10,7 @@ import {
 } from './users.schema.js';
 import { schemaValidator } from '../../utils/validator.js';
 import { serviceAsyncWrapper } from '../../utils/service-wrapper.js';
+import { userRepository } from './repository/index.js';
 
 const assertIsValidCreateUserInput = schemaValidator(CreateUserInputSchema);
 const assertIsValidFindUserInput = schemaValidator(FindUserInputSchema);
@@ -18,35 +19,16 @@ export const createUser = serviceAsyncWrapper(
   async (data: CreateUserInput): Promise<UserProfile> => {
     assertIsValidCreateUserInput(data);
 
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            email: data.email
-          },
-          {
-            username: data.username
-          }
-        ]
-      }
-    });
-
+    const existingUser = await userRepository.findOne(data);
     if (existingUser)
       throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.');
 
-    const user = await prisma.user.create({
-      data: {
-        ...data,
-        password: await hashPassword(data.password)
-      }
+    const user = await userRepository.create({
+      ...data,
+      password: await hashPassword(data.password)
     });
 
-    return {
-      email: user.email,
-      username: user.username,
-      userId: user.user_id,
-      createdAt: user.created_at
-    };
+    return user;
   }
 );
 
@@ -56,39 +38,24 @@ export const findUser = serviceAsyncWrapper(
   ): Promise<UserProfile> => {
     assertIsValidFindUserInput(data);
 
-    const user = await prisma.user.findFirst({
-      where: { ...data }
-    });
+    const user = await userRepository.findUnique(data);
 
     if (!user) throw new AppError('NOT_FOUND', 'User not found.');
 
-    return {
-      email: user.email,
-      userId: user.user_id,
-      username: user.username,
-      createdAt: user.created_at
-    };
+    return user;
   }
 );
 
-export const validateAuthCreds = serviceAsyncWrapper(
-  async (data: { email: string; password: string }): Promise<UserProfile> => {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: data.email
-      }
-    });
-
+export const authenticateUser = serviceAsyncWrapper(
+  async (data: { email: string; password: string }): Promise<string> => {
+    const user = await userRepository.findUserWithCredentials(data.email);
     if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
     const isPassword = await verifyPassword(data.password, user.password);
     if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
-    return {
-      email: user.email,
-      userId: user.user_id,
-      username: user.username,
-      createdAt: user.created_at
-    };
+    await userRepository.update(user.userId, { lastLogin: new Date() });
+
+    return user.userId;
   }
 );

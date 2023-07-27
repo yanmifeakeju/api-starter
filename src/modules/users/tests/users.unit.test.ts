@@ -18,48 +18,51 @@ afterAll(() => {
 
 describe('User Service', () => {
   describe('createUser()', () => {
-    it('should throw error when called with empty fields', async () => {
-      const newUser: CreateUserInput = {
-        email: '',
-        password: '',
-        username: ''
-      };
+    describe('Data Validation', () => {
+      it('should throw error when called with empty fields', async () => {
+        const newUser: CreateUserInput = {
+          email: '',
+          password: '',
+          username: ''
+        };
 
-      expect(() => createUser(newUser)).rejects.toThrow(AppError);
-    });
+        expect(() => createUser(newUser)).rejects.toThrow(AppError);
+      });
 
-    it('should throw duplicate error when user already exists', async () => {
-      const newUser: CreateUserInput = {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-        username: faker.internet.userName()
-      };
+      it('should throw duplicate error when user already exists', async () => {
+        const newUser: CreateUserInput = {
+          email: faker.internet.email(),
+          password: faker.internet.password(),
+          username: faker.internet.userName()
+        };
 
-      const createdUser = {
-        created_at: new Date(),
-        email: newUser.email,
-        username: newUser.username,
-        id: 1,
-        password: newUser.password,
-        user_id: faker.string.uuid()
-      };
+        const createdUser = {
+          created_at: new Date(),
+          last_login: new Date(),
+          deleted_at: null,
+          email: newUser.email,
+          username: newUser.username,
+          id: 1,
+          user_id: faker.string.uuid()
+        };
 
-      prisma.user.findFirst.mockResolvedValueOnce(createdUser);
+        prisma.user.findFirst.mockResolvedValueOnce(createdUser);
 
-      expect(() => createUser(newUser)).rejects.toThrow(AppError);
-      expect(prisma.user.findFirst).toHaveBeenCalledOnce();
-      expect(prisma.user.create).not.toHaveBeenCalledOnce();
-      expect(prisma.user.findFirst).toHaveBeenNthCalledWith(1, {
-        where: {
-          OR: [
-            {
-              email: newUser.email
-            },
-            {
-              username: newUser.username
-            }
-          ]
-        }
+        expect(() => createUser(newUser)).rejects.toThrow(AppError);
+        expect(prisma.user.findFirst).toHaveBeenCalledOnce();
+        expect(prisma.user.create).not.toHaveBeenCalledOnce();
+        expect(prisma.user.findFirst).toHaveBeenNthCalledWith(1, {
+          where: {
+            OR: [
+              {
+                email: newUser.email
+              },
+              {
+                username: newUser.username
+              }
+            ]
+          }
+        });
       });
     });
 
@@ -73,6 +76,8 @@ describe('User Service', () => {
       const createdUser = {
         created_at: new Date(),
         email: newUser.email,
+        last_login: new Date(),
+        deleted_at: null,
         username: newUser.username,
         id: randomInt(1000),
         password: newUser.password,
@@ -88,7 +93,7 @@ describe('User Service', () => {
         userId: createdUser.user_id,
         email: createdUser.email,
         username: createdUser.username,
-        createdAt: createdUser.created_at
+        lastLogin: createdUser.last_login
       });
 
       expect(prisma.user.findFirst).toHaveBeenCalledOnce();

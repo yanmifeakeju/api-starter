@@ -8,7 +8,7 @@ export const UserSchema = Type.Object(
     email: Type.String({ format: 'email' }),
     username: Type.String(),
     password: Type.String({ minLength: 8 }),
-    createdAt: DateSchema
+    lastLogin: DateSchema
   },
   { additionalProperties: false }
 );
@@ -25,14 +25,10 @@ export const FindUserInputSchema = Type.Union([
 ]);
 
 export const UserProfileSchema = Type.Omit(UserSchema, ['id', 'password']);
-
-export const LoginUserInputSchema = Type.Pick(UserSchema, [
-  'email',
-  'password'
-]);
+export const UserAuthSchema = Type.Pick(UserSchema, ['email', 'password']);
 
 export type User = Static<typeof UserSchema>;
 export type UserProfile = Static<typeof UserProfileSchema>;
 export type CreateUserInput = Static<typeof CreateUserInputSchema>;
-export type LoginUserInput = Static<typeof LoginUserInputSchema>;
-export type FindUserInput = Static<typeof FindUserInputSchema>;
+export type LoginUserInput = Static<typeof UserAuthSchema>;
+export type UserAuth = Static<typeof UserAuthSchema>;

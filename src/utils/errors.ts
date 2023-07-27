@@ -34,6 +34,5 @@ export const mapAppErrorToApiError = (error: AppError) => {
 
 export const handleAppError = (error: Error) => {
   if (env.NODE_ENV === 'development') console.error(error);
-  reportPrismaError(error as Error);
   throw error;
 };

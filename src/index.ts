@@ -4,9 +4,9 @@ import { userRoutes } from './apis/http/users/users.routes.js';
 import { schemaErrorMessageGenerator } from './utils/error-message.js';
 import { AppError } from './shared/error/AppError.js';
 import { mapAppErrorToApiError } from './utils/errors.js';
-import authentication from './plugins/authentication.js';
+import authentication from './apis/http/plugins/authentication.js';
 import { env } from './config/env.js';
-import swagger from './plugins/swagger.js';
+import swagger from './apis/http/plugins/swagger.js';
 
 const server = Fastify({
   logger: true

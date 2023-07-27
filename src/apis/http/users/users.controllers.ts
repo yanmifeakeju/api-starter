@@ -6,7 +6,7 @@ import {
 } from '../../../modules/users/users.service.js';
 import { CreateUserInput } from '../../../modules/users/users.schema.js';
 
-export const registerUserHandler = async (
+export const registerUser = async (
   request: FastifyRequest<{
     Body: CreateUserInput;
   }>,
@@ -27,7 +27,7 @@ export const registerUserHandler = async (
   });
 };
 
-export const userProfileHandler = async (
+export const fetchUserProfile = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
@@ -38,7 +38,7 @@ export const userProfileHandler = async (
     .send({ success: true, message: 'Fetched user profile', data: response });
 };
 
-export const loginHandler = async (
+export const loginUser = async (
   request: FastifyRequest<{
     Body: { email: string; password: string };
   }>,

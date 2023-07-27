@@ -1,6 +1,6 @@
 import { env } from '../config/env.js';
 import { AppError } from '../shared/error/AppError.js';
-import { reportPrismaError } from './prismaError.js';
+import { reportPrismaError } from './prisma-error.js';
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
   switch (value) {

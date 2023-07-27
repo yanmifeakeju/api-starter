@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import {
-  loginHandler,
-  registerUserHandler,
-  userProfileHandler
+  loginUser,
+  registerUser,
+  fetchUserProfile
 } from './users.controllers.js';
 import {
   UserProfileSchema,
@@ -39,7 +39,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       }
     },
 
-    registerUserHandler
+    registerUser
   );
 
   server.get(
@@ -58,7 +58,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       }
     },
 
-    userProfileHandler
+    fetchUserProfile
   );
 
   server.post(
@@ -83,7 +83,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       }
     },
 
-    loginHandler
+    loginUser
   );
 
   return server;

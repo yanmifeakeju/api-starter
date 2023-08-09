@@ -11,7 +11,7 @@ interface IUserRepository extends IRepository<Partial<User>> {}
 class UserRepository implements IUserRepository {
   private name = 'users';
   private userDTO(entity: UserEntity | null): UserProfile | null {
-    if (!entity || entity.deleted_at) return null;
+    if (!entity) return null;
 
     return {
       userId: entity.user_id,
@@ -58,7 +58,8 @@ class UserRepository implements IUserRepository {
             {
               username
             }
-          ]
+          ],
+          deleted_at: null
         }
       });
 
@@ -87,6 +88,8 @@ class UserRepository implements IUserRepository {
         }
       });
 
+      if (user?.deleted_at) return null;
+
       return this.userDTO(user);
     } catch (error) {
       reportPrismaError(
@@ -100,8 +103,8 @@ class UserRepository implements IUserRepository {
     email: string
   ): Promise<(UserProfile & { password: string }) | null> {
     try {
-      const userData = await prisma.user.findUnique({
-        where: { email },
+      const userData = await prisma.user.findFirst({
+        where: { email, deleted_at: null },
         include: {
           credentials: {
             select: { password: true }
@@ -109,8 +112,7 @@ class UserRepository implements IUserRepository {
         }
       });
 
-      if (!userData || userData.deleted_at || !userData.credentials)
-        return null;
+      if (!userData || !userData.credentials) return null;
 
       const { credentials, ...user } = userData;
       const { password } = credentials;
@@ -126,8 +128,8 @@ class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<UserProfile | null> {
     try {
-      const user = await prisma.user.findUnique({
-        where: { user_id: id }
+      const user = await prisma.user.findFirst({
+        where: { user_id: id, deleted_at: null }
       });
 
       return this.userDTO(user);

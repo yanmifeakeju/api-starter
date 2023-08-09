@@ -60,7 +60,9 @@ describe('User Service', () => {
               {
                 username: newUser.username
               }
-            ]
+            ],
+
+            deleted_at: null
           }
         });
       });

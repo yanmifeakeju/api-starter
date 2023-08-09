@@ -9,7 +9,10 @@ import { env } from '../../config/env.js';
 import swagger from './plugins/swagger.js';
 
 const server = Fastify({
-  logger: true
+  logger: {
+    level: 'debug',
+    transport: { target: 'pino-pretty' }
+  }
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 await server.register(authentication);
@@ -42,8 +45,8 @@ server.get('/health-check', async () => {
 
 await server.register(userRoutes, { prefix: 'api/users' });
 
+server.swagger();
 await server.ready();
-// server.swagger();
 
 async function main() {
   try {

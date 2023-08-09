@@ -39,7 +39,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       }
     },
 
-    registerUser
+    registerUser.bind(fastify)
   );
 
   server.get(
@@ -58,7 +58,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       }
     },
 
-    fetchUserProfile
+    fetchUserProfile.bind(fastify)
   );
 
   server.post(
@@ -83,7 +83,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
       }
     },
 
-    loginUser
+    loginUser.bind(fastify)
   );
 
   return server;

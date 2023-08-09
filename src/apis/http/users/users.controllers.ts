@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {
   createUser,
   findUser,
@@ -6,12 +6,13 @@ import {
 } from '../../../modules/users/users.service.js';
 import { CreateUserInput } from '../../../modules/users/users.schema.js';
 
-export const registerUser = async (
+export const registerUser = async function (
+  this: FastifyInstance,
   request: FastifyRequest<{
     Body: CreateUserInput;
   }>,
   reply: FastifyReply
-) => {
+) {
   const { body } = request;
 
   const response = await createUser(body);
@@ -27,10 +28,11 @@ export const registerUser = async (
   });
 };
 
-export const fetchUserProfile = async (
+export const fetchUserProfile = async function (
+  this: FastifyInstance,
   request: FastifyRequest,
   reply: FastifyReply
-) => {
+) {
   const { user } = request as { user: { userId: string } };
   const response = await findUser(user);
   reply
@@ -38,12 +40,13 @@ export const fetchUserProfile = async (
     .send({ success: true, message: 'Fetched user profile', data: response });
 };
 
-export const loginUser = async (
+export const loginUser = async function (
+  this: FastifyInstance,
   request: FastifyRequest<{
     Body: { email: string; password: string };
   }>,
   reply: FastifyReply
-) => {
+) {
   const { email, password } = request.body;
 
   const userId = await authenticateUser({ email, password });

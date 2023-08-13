@@ -9,14 +9,15 @@ import { env } from '../../config/env.js';
 import swagger from './plugins/swagger.js';
 
 const server = Fastify({
+  ignoreTrailingSlash: true,
+  caseSensitive: false,
   logger: {
     level: 'debug',
     transport: { target: 'pino-pretty' }
   }
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-await server.register(authentication);
-await server.register(swagger);
+await server.register(authentication).register(swagger);
 
 server.setErrorHandler((error, request, reply) => {
   let err = {
@@ -37,6 +38,15 @@ server.setErrorHandler((error, request, reply) => {
   return reply
     .status(err.statusCode)
     .send({ success: false, error: err.error });
+});
+
+server.setNotFoundHandler(function notFound(request, reply) {
+  const payload = {
+    success: false,
+    message: `Route ${request.method}: ${request.url} not found`
+  };
+
+  reply.send(payload);
 });
 
 server.get('/health-check', async () => {

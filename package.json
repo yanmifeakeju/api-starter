@@ -10,7 +10,8 @@
     "build:watch": "tsc -p tsconfig.build.json -w",
     "test:integration": "vitest run tests/**",
     "test:unit": "vitest watch src/**",
-    "test": "vitest run"
+    "test": "vitest run",
+    "start:api": "node ./dist/apps/api/index.js"
   },
   "keywords": [],
   "author": "",

@@ -33,6 +33,7 @@ export const mapAppErrorToApiError = (error: AppError) => {
 };
 
 export const handleAppError = (label: string, error: Error) => {
-  if (env.NODE_ENV === 'development') console.error(label, error);
+  if (env.NODE_ENV === 'development')
+    console.error(label.toUpperCase(), ':', error.message || error);
   throw error;
 };

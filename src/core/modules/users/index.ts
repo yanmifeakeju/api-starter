@@ -9,61 +9,62 @@ import {
   UserProfile
 } from './users.schema.js';
 import { schemaValidator } from '../../../utils/validator.js';
-import { serviceAsyncWrapper } from '../../../utils/service-wrapper.js';
+import { moduleAsyncWrapper } from '../../../utils/service-wrapper.js';
 import { userRepository } from './repository/index.js';
 
 const assertIsValidCreateUserInput = schemaValidator(CreateUserInputSchema);
 const assertIsValidFindUserInput = schemaValidator(FindUserInputSchema);
 
-const wrapper = serviceAsyncWrapper('users');
+const wrapper = moduleAsyncWrapper('users');
 
-export const createUser = async (
-  data: CreateUserInput
-): Promise<UserProfile> => {
-  assertIsValidCreateUserInput(data);
+export const createUser = wrapper(
+  async (data: CreateUserInput): Promise<UserProfile> => {
+    assertIsValidCreateUserInput(data);
 
-  const existingUser = await userRepository.findOne(data);
-  if (existingUser)
-    throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.');
+    const existingUser = await userRepository.findOne(data);
+    if (existingUser)
+      throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.');
 
-  const user = await userRepository.create({
-    ...data,
-    password: await hashPassword(data.password)
-  });
+    const user = await userRepository.create({
+      ...data,
+      password: await hashPassword(data.password)
+    });
 
-  return user;
-};
+    return user;
+  }
+);
 
-export const findUser = async (
-  data: OnlyOneProperty<{ userId: string; email: string }>
-): Promise<UserProfile> => {
-  assertIsValidFindUserInput(data);
+export const findUser = wrapper(
+  async (
+    data: OnlyOneProperty<{ userId: string; email: string }>
+  ): Promise<UserProfile> => {
+    assertIsValidFindUserInput(data);
 
-  const user = await userRepository.findUnique(data);
+    const user = await userRepository.findUnique(data);
 
-  if (!user) throw new AppError('NOT_FOUND', 'User not found.');
+    if (!user) throw new AppError('NOT_FOUND', 'User not found.');
 
-  return user;
-};
+    return user;
+  }
+);
 
-export const authenticateUser = async (data: {
-  email: string;
-  password: string;
-}): Promise<UserProfile> => {
-  const user = await userRepository.findUserWithCredentials(data.email);
-  if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+export const authenticateUser = wrapper(
+  async (data: { email: string; password: string }): Promise<UserProfile> => {
+    const user = await userRepository.findUserWithCredentials(data.email);
+    if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
-  const isPassword = await verifyPassword(data.password, user.password);
-  if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+    const isPassword = await verifyPassword(data.password, user.password);
+    if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
-  const lastLogin = new Date();
+    const lastLogin = new Date();
 
-  await userRepository.update(user.userId, { lastLogin });
+    await userRepository.update(user.userId, { lastLogin });
 
-  return {
-    userId: user.userId,
-    email: user.email,
-    username: user.username,
-    lastLogin
-  };
-};
+    return {
+      userId: user.userId,
+      email: user.email,
+      username: user.username,
+      lastLogin
+    };
+  }
+);

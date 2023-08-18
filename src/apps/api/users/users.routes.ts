@@ -1,11 +1,8 @@
 import {
   FastifyInstance,
-  FastifyRequest,
   RouteGenericInterface,
-  RouteHandler,
   RouteHandlerMethod,
-  RouteOptions,
-  RouteShorthandOptions
+  RouteOptions
 } from 'fastify';
 import {
   loginUser,
@@ -15,15 +12,13 @@ import {
 import {
   UserProfileSchema,
   CreateUserInputSchema,
-  UserAuthSchema,
-  CreateUserInput
+  UserAuthSchema
 } from '../../../core/modules/users/users.schema.js';
 import {
   BaseResponseSchema,
   ErrorResponseSchema
 } from '../../../shared/schema/index.js';
 import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { Server, IncomingMessage, ServerResponse } from 'http';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
   const server = fastify.withTypeProvider<TypeBoxTypeProvider>();
@@ -76,7 +71,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
         {
           method: 'POST',
           url: '/sign_in',
-          handler: loginUser as RouteHandler,
+          handler: loginUser as RouteHandlerMethod,
           schema: {
             body: UserAuthSchema,
             response: {

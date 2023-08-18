@@ -10,7 +10,6 @@ import swagger from './plugins/swagger.js';
 
 const app = Fastify({
   ignoreTrailingSlash: true,
-  caseSensitive: false,
   logger: {
     level: 'debug',
     transport: { target: 'pino-pretty' }

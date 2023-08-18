@@ -8,7 +8,7 @@ import authentication from './plugins/authentication.js';
 import { env } from '../../config/env.js';
 import swagger from './plugins/swagger.js';
 
-const server = Fastify({
+const app = Fastify({
   ignoreTrailingSlash: true,
   caseSensitive: false,
   logger: {
@@ -17,13 +17,16 @@ const server = Fastify({
   }
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-await server.register(authentication).register(swagger);
+await app.register(authentication).register(swagger);
 
-server.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error, request, reply) => {
+  request.log.error('An error ocurred', error);
+
   let err = {
     statusCode: error.statusCode || 500,
     error: error.message || 'Oops. Something went wrong.'
   };
+
   if (error.validation) {
     err.statusCode = 400;
     err.error = schemaErrorMessageGenerator(error.validation);
@@ -40,28 +43,27 @@ server.setErrorHandler((error, request, reply) => {
     .send({ success: false, error: err.error });
 });
 
-server.setNotFoundHandler(function notFound(request, reply) {
+app.setNotFoundHandler(function notFound(request, reply) {
   const payload = {
     success: false,
     message: `Route ${request.method}: ${request.url} not found`
   };
 
-  reply.send(payload);
+  reply.status(404).send(payload);
 });
 
-server.get('/health-check', async () => {
+app.get('/health-check', async () => {
   return { status: 'OK' };
 });
 
-await server.register(userRoutes, { prefix: 'api/users' });
+await app.register(userRoutes, { prefix: 'api/v1' }); // /users;
 
-server.swagger();
-await server.ready();
+app.swagger();
+await app.ready();
 
 async function main() {
   try {
-    await server.listen({ port: env.SERVER_PORT, host: '0.0.0.0' });
-    console.info('Server up.');
+    await app.listen({ port: env.SERVER_PORT, host: '0.0.0.0' });
   } catch (error) {
     console.error(error);
     process.exit(1);

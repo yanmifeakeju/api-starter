@@ -1,14 +1,14 @@
 import { describe, expect, vi, it, afterAll } from 'vitest';
-import { createUser } from '../users.service.js';
+import { createUser } from '../index.js';
 import { CreateUserInput } from '../users.schema.js';
 import { faker } from '@faker-js/faker';
-import { hashPassword } from '../../../utils/password.js';
-import { prisma } from '../../../libs/prisma/__mocks__/index.js';
-import { AppError } from '../../../shared/error/AppError.js';
+import { hashPassword } from '../../../../utils/password.js';
+import { prisma } from '../../../../libs/prisma/__mocks__/index.js';
+import { AppError } from '../../../../shared/error/AppError.js';
 import { randomInt } from 'crypto';
 
-vi.mock('../../../libs/prisma/index.js');
-vi.mock('../../../utils/password.js', () => ({
+vi.mock('../../../../libs/prisma/index.js');
+vi.mock('../../../../utils/password.js', () => ({
   hashPassword: vi.fn()
 }));
 

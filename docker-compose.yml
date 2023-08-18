@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  api:
+    image: fastify-rest
+    init: true
+    build:
+      context: '.'
+      dockerfile: './images/api.df'
+    ports:
+      - '3000:3000'

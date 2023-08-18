@@ -1,15 +1,15 @@
-import { prisma } from '../../libs/prisma/index.js';
-import { AppError } from '../../shared/error/AppError.js';
-import { OnlyOneProperty } from '../../types/util-types/index.js';
-import { hashPassword, verifyPassword } from '../../utils/password.js';
+import { prisma } from '../../../libs/prisma/index.js';
+import { AppError } from '../../../shared/error/AppError.js';
+import { OnlyOneProperty } from '../../../types/util-types/index.js';
+import { hashPassword, verifyPassword } from '../../../utils/password.js';
 import {
   CreateUserInput,
   CreateUserInputSchema,
   FindUserInputSchema,
   UserProfile
 } from './users.schema.js';
-import { schemaValidator } from '../../utils/validator.js';
-import { serviceAsyncWrapper } from '../../utils/service-wrapper.js';
+import { schemaValidator } from '../../../utils/validator.js';
+import { serviceAsyncWrapper } from '../../../utils/service-wrapper.js';
 import { userRepository } from './repository/index.js';
 
 const assertIsValidCreateUserInput = schemaValidator(CreateUserInputSchema);
@@ -49,14 +49,21 @@ export const findUser = async (
 export const authenticateUser = async (data: {
   email: string;
   password: string;
-}): Promise<string> => {
+}): Promise<UserProfile> => {
   const user = await userRepository.findUserWithCredentials(data.email);
   if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
   const isPassword = await verifyPassword(data.password, user.password);
   if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
-  await userRepository.update(user.userId, { lastLogin: new Date() });
+  const lastLogin = new Date();
 
-  return user.userId;
+  await userRepository.update(user.userId, { lastLogin });
+
+  return {
+    userId: user.userId,
+    email: user.email,
+    username: user.username,
+    lastLogin
+  };
 };

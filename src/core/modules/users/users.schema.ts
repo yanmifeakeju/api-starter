@@ -1,5 +1,5 @@
 import { Type, Static } from '@sinclair/typebox';
-import { DateSchema } from '../../shared/schema/index.js';
+import { DateSchema } from '../../../shared/schema/index.js';
 
 export const UserSchema = Type.Object(
   {
@@ -20,8 +20,8 @@ export const CreateUserInputSchema = Type.Pick(UserSchema, [
 ]);
 
 export const FindUserInputSchema = Type.Union([
-  Type.Pick(UserSchema, ['email']),
-  Type.Pick(UserSchema, ['userId'])
+  Type.Optional(Type.Pick(UserSchema, ['userId'])),
+  Type.Optional(Type.Pick(UserSchema, ['email']))
 ]);
 
 export const UserProfileSchema = Type.Omit(UserSchema, ['id', 'password']);
@@ -32,3 +32,9 @@ export type UserProfile = Static<typeof UserProfileSchema>;
 export type CreateUserInput = Static<typeof CreateUserInputSchema>;
 export type LoginUserInput = Static<typeof UserAuthSchema>;
 export type UserAuth = Static<typeof UserAuthSchema>;
+export type FindUserArgs = Static<typeof FindUserInputSchema>;
+
+const r: FindUserArgs = {
+  email: '',
+  userId: ''
+};

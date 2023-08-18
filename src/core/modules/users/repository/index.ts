@@ -1,10 +1,9 @@
 import { Prisma, User as UserEntity } from '@prisma/client';
-import { prisma } from '../../../libs/prisma/index.js';
+import { prisma } from '../../../../libs/prisma/index.js';
 import { CreateUserInput, User, UserProfile } from '../users.schema.js';
-import { IRepository } from '../../../shared/types/repository.js';
-import { OnlyOneProperty } from '../../../types/util-types/index.js';
-import { reportPrismaError } from '../../../utils/prisma-error.js';
-import { AppError } from '../../../shared/error/AppError.js';
+import { IRepository } from '../../../../shared/types/repository.js';
+import { OnlyOneProperty } from '../../../../types/util-types/index.js';
+import { reportPrismaError } from '../../../../utils/prisma-error.js';
 
 interface IUserRepository extends IRepository<Partial<User>> {}
 

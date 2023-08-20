@@ -1,70 +1,40 @@
-import { prisma } from '../../../libs/prisma/index.js';
 import { AppError } from '../../../shared/error/AppError.js';
-import { OnlyOneProperty } from '../../../types/util-types/index.js';
-import { hashPassword, verifyPassword } from '../../../utils/password.js';
+import { moduleAsyncWrapper } from '../../../utils/module-wrapper.js';
+import { verifyPassword } from '../../../utils/password.js';
+import { fetchUser, fetchUserAuthCredentials, saveUser } from './repository/index.js';
+import { type User, type UserProfile } from './schema.js';
 import {
-  CreateUserInput,
-  CreateUserInputSchema,
-  FindUserInputSchema,
-  UserProfile
-} from './users.schema.js';
-import { schemaValidator } from '../../../utils/validator.js';
-import { moduleAsyncWrapper } from '../../../utils/service-wrapper.js';
-import { userRepository } from './repository/index.js';
-
-const assertIsValidCreateUserInput = schemaValidator(CreateUserInputSchema);
-const assertIsValidFindUserInput = schemaValidator(FindUserInputSchema);
+  validateCheckUserCredentialsSchema,
+  validateCreateUserData,
+  validateFindUserProfileData,
+} from './validators.js';
 
 const wrapper = moduleAsyncWrapper('users');
 
 export const createUser = wrapper(
-  async (data: CreateUserInput): Promise<UserProfile> => {
-    assertIsValidCreateUserInput(data);
-
-    const existingUser = await userRepository.findOne(data);
-    if (existingUser)
-      throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.');
-
-    const user = await userRepository.create({
-      ...data,
-      password: await hashPassword(data.password)
-    });
-
-    return user;
-  }
+  async (input: Omit<User, 'userId' | 'lastLogin' | 'id'>): Promise<UserProfile> => {
+    const { email, password, username } = validateCreateUserData(input);
+    return saveUser({ email, password, username });
+  },
 );
 
 export const findUser = wrapper(
-  async (
-    data: OnlyOneProperty<{ userId: string; email: string }>
-  ): Promise<UserProfile> => {
-    assertIsValidFindUserInput(data);
-
-    const user = await userRepository.findUnique(data);
-
-    if (!user) throw new AppError('NOT_FOUND', 'User not found.');
-
-    return user;
-  }
+  async (input: Partial<Pick<User, 'email' | 'username'>>): Promise<UserProfile | null> => {
+    const data = validateFindUserProfileData(input);
+    return fetchUser(data);
+  },
 );
 
-export const authenticateUser = wrapper(
-  async (data: { email: string; password: string }): Promise<UserProfile> => {
-    const user = await userRepository.findUserWithCredentials(data.email);
-    if (!user) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+export const findUserWithCredentials = wrapper(
+  async (input: Pick<User, 'email' | 'password'>): Promise<UserProfile> => {
+    const data = validateCheckUserCredentialsSchema(input);
+    const result = await fetchUserAuthCredentials(data.email);
 
-    const isPassword = await verifyPassword(data.password, user.password);
-    if (!isPassword) throw new AppError('NOT_FOUND', 'Invalid credentials.');
+    if (!result) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
-    const lastLogin = new Date();
+    const isUserCreds = await verifyPassword(data.password, result.cred.password);
+    if (!isUserCreds) throw new AppError('NOT_FOUND', 'Invalid credentials.');
 
-    await userRepository.update(user.userId, { lastLogin });
-
-    return {
-      userId: user.userId,
-      email: user.email,
-      username: user.username,
-      lastLogin
-    };
-  }
+    return result.user;
+  },
 );

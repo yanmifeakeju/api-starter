@@ -1,187 +1,93 @@
-import { Prisma, User as UserEntity } from '@prisma/client';
-import { prisma } from '../../../../libs/prisma/index.js';
-import { CreateUserInput, User, UserProfile } from '../users.schema.js';
-import { IRepository } from '../../../../shared/types/repository.js';
-import { OnlyOneProperty } from '../../../../types/util-types/index.js';
-import { reportPrismaError } from '../../../../utils/prisma-error.js';
+import { eq, or, placeholder } from 'drizzle-orm';
+import { users, usersCredentials } from '../../../../db/schema/index.js';
+import { db } from '../../../../libs/drizzle/index.js';
+import { type OnlyOneProperty } from '../../../../types/util-types/index.js';
+import { type UserProfile } from '../schema.js';
 
-interface IUserRepository extends IRepository<Partial<User>> {}
+export const saveUser = async ({
+  email,
+  username,
+  password,
+}: Pick<
+  UserProfile & { password: string },
+  'email' | 'username' | 'password'
+>): Promise<UserProfile> => {
+  return await db.transaction(async (trx) => {
+    const [user] = await trx
+      .insert(users)
+      .values({ email, username })
+      .returning();
 
-class UserRepository implements IUserRepository {
-  private name = 'users';
-  private userDTO(entity: UserEntity | null): UserProfile | null {
-    if (!entity) return null;
+    await trx.insert(usersCredentials).values({ userId: user.id, password });
+    return user;
+  });
+};
 
-    return {
-      userId: entity.user_id,
-      email: entity.email,
-      username: entity.username,
-      lastLogin: entity.last_login
-    };
-  }
+export const fetchUser = async ({
+  email,
+  username,
+}: Partial<Omit<UserProfile, 'lastLogin' | 'userId'>>) => {
+  const filter = [];
 
-  async create(data: CreateUserInput) {
-    try {
-      const user = await prisma.user.create({
-        data: {
-          email: data.email,
-          username: data.username,
-          credentials: {
-            create: {
-              password: data.password
-            }
-          }
-        }
-      });
+  email && filter.push(eq(users.email, email));
+  username && filter.push(eq(users.username, username));
 
-      return this.userDTO(user)!;
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.create.name}" operation failed on ${this.name}`
-      );
-    }
-  }
+  const user = await db
+    .select()
+    .from(users)
+    .where(or(...filter));
 
-  async findOne({
-    email,
-    username
-  }: CreateUserInput): Promise<UserProfile | null> {
-    try {
-      const user = await prisma.user.findFirst({
-        where: {
-          OR: [
-            {
-              email
-            },
-            {
-              username
-            }
-          ],
-          deleted_at: null
-        }
-      });
+  return user.length ? user[0] : null;
+};
 
-      return this.userDTO(user);
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.findOne.name}" operation failed on ${this.name}`
-      );
-    }
-  }
+export const fetchUniqueUser = async ({
+  email,
+  userId,
+  username,
+}: OnlyOneProperty<Omit<UserProfile, 'lastLogin'>>) => {
+  const filter = [];
 
-  async findUnique({
-    email,
-    userId,
-    username
-  }: OnlyOneProperty<
-    Omit<UserProfile, 'lastLogin'>
-  >): Promise<UserProfile | null> {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          ...(email && { email }),
-          ...(username && { username }),
-          ...(userId && { user_id: userId })
-        }
-      });
+  email && filter.push(eq(users.email, email));
+  userId && filter.push(eq(users.userId, userId));
+  username && filter.push(eq(users.username, username));
 
-      if (user?.deleted_at) return null;
+  const user = await db
+    .select()
+    .from(users)
+    .where(or(...filter));
 
-      return this.userDTO(user);
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.findUnique.name}" operation failed on ${this.name}`
-      );
-    }
-  }
+  return user.length ? user[0] : null;
+};
 
-  async findUserWithCredentials(
-    email: string
-  ): Promise<(UserProfile & { password: string }) | null> {
-    try {
-      const userData = await prisma.user.findFirst({
-        where: { email, deleted_at: null },
-        include: {
-          credentials: {
-            select: { password: true }
-          }
-        }
-      });
+export const fetchUserByIdPrepared = () => {
+  const prepared = db
+    .select()
+    .from(users)
+    .where(eq(users.userId, placeholder('userId')))
+    .prepare('fetch_user_id');
+  return async (userId: string) => {
+    const password = await prepared.execute({ userId });
+    return password.length ? password[0] : null;
+  };
+};
 
-      if (!userData || !userData.credentials) return null;
+export const fetchUserById = fetchUserByIdPrepared();
 
-      const { credentials, ...user } = userData;
-      const { password } = credentials;
-
-      return { ...this.userDTO(user)!, password };
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.findUserWithCredentials.name}" operation failed on ${this.name}`
-      );
-    }
-  }
-
-  async findById(id: string): Promise<UserProfile | null> {
-    try {
-      const user = await prisma.user.findFirst({
-        where: { user_id: id, deleted_at: null }
-      });
-
-      return this.userDTO(user);
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.findById.name}" operation failed on ${this.name}`
-      );
-    }
-  }
-
-  findAll(): Promise<UserProfile[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  async update(
-    id: string,
-    data: Partial<Omit<UserProfile, 'userId'>>
-  ): Promise<UserProfile> {
-    try {
-      const user = await prisma.user.update({
-        where: { user_id: id },
-        data: {
-          ...(data.email && { email: data.email }),
-          ...(data.lastLogin && { last_login: data.lastLogin }),
-          ...(data.username && { username: data.username })
-        }
-      });
-
-      return this.userDTO(user)!;
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.update.name}" operation failed on ${this.name}`
-      );
-    }
-  }
-
-  async delete(id: string): Promise<void> {
-    try {
-      await prisma.user.update({
-        where: { user_id: id },
-        data: {
-          deleted_at: new Date()
-        }
-      });
-    } catch (error) {
-      reportPrismaError(
-        error as Error,
-        `"${this.delete.name}" operation failed on ${this.name}`
-      );
-    }
-  }
-}
-
-export const userRepository = new UserRepository();
+const fetchUserAuthCredentialsPrepared = () => {
+  const prepared = db
+    .select({
+      user: users,
+      cred: {
+        password: usersCredentials.password,
+      },
+    })
+    .from(users)
+    .innerJoin(usersCredentials, eq(users.id, usersCredentials.userId))
+    .where(eq(users.email, placeholder('email')))
+    .prepare('fetch_auth_creds');
+  return async (email: string) => {
+    const userWithCreds = await prepared.execute({ email });
+    return userWithCreds.length ? userWithCreds[0] : null;
+  };
+};
+export const fetchUserAuthCredentials = fetchUserAuthCredentialsPrepared();

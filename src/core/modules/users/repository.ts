@@ -1,8 +1,8 @@
-import { eq, or, placeholder } from 'drizzle-orm';
-import { users, usersCredentials } from '../../../../db/schema/index.js';
-import { db } from '../../../../libs/drizzle/index.js';
-import { type OnlyOneProperty } from '../../../../types/util-types/index.js';
-import { type UserProfile } from '../schema.js';
+import { and, eq, isNull, or, placeholder } from 'drizzle-orm';
+import { users, usersCredentials } from '../../../db/schema/index.js';
+import { db } from '../../../libs/drizzle/index.js';
+import { type OnlyOneProperty } from '../../../types/util-types/index.js';
+import { type UserProfile } from './schema.js';
 
 export const saveUser = async ({
   email,
@@ -66,8 +66,8 @@ export const fetchUserByIdPrepared = () => {
     .where(eq(users.userId, placeholder('userId')))
     .prepare('fetch_user_id');
   return async (userId: string) => {
-    const password = await prepared.execute({ userId });
-    return password.length ? password[0] : null;
+    const user = await prepared.execute({ userId });
+    return user.length ? user[0] : null;
   };
 };
 
@@ -83,7 +83,7 @@ const fetchUserAuthCredentialsPrepared = () => {
     })
     .from(users)
     .innerJoin(usersCredentials, eq(users.id, usersCredentials.userId))
-    .where(eq(users.email, placeholder('email')))
+    .where(and(eq(users.email, placeholder('email')), isNull(users.deletedAt)))
     .prepare('fetch_auth_creds');
   return async (email: string) => {
     const userWithCreds = await prepared.execute({ email });

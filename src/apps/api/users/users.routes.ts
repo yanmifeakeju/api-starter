@@ -1,54 +1,35 @@
-import {
-  FastifyInstance,
-  RouteGenericInterface,
-  RouteHandlerMethod,
-  RouteOptions
-} from 'fastify';
-import {
-  loginUser,
-  registerUser,
-  fetchUserProfile
-} from './users.controllers.js';
-import {
-  UserProfileSchema,
-  CreateUserInputSchema,
-  UserAuthSchema
-} from '../../../core/modules/users/users.schema.js';
-import {
-  BaseResponseSchema,
-  ErrorResponseSchema
-} from '../../../shared/schema/index.js';
-import { Type, TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { Type, type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { type FastifyInstance, type RouteHandlerMethod, type RouteOptions } from 'fastify';
+import { UserSchema } from '../../../core/index.js';
+import { BaseResponseSchema, ErrorResponseSchema } from '../../../shared/schema/index.js';
+import { fetchUserProfile, loginUser, registerUser } from './users.controllers.js';
 
 export const userRoutes = async (fastify: FastifyInstance) => {
   const server = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
-  // let r: RouteShorthandOptions<>;
-  let p: RouteGenericInterface = {};
-
   server.register(
-    async function (routePlugin) {
+    async function(routePlugin) {
       const routes: RouteOptions[] = [
         {
           method: 'POST',
           url: '/',
           handler: registerUser as RouteHandlerMethod,
           schema: {
-            body: CreateUserInputSchema,
+            body: UserSchema.createUserProfileSchema,
             response: {
               201: Type.Intersect([
                 BaseResponseSchema,
                 Type.Object({
                   data: Type.Object({
                     session: Type.Object({
-                      authToken: Type.String()
-                    })
-                  })
-                })
+                      authToken: Type.String(),
+                    }),
+                  }),
+                }),
               ]),
-              422: ErrorResponseSchema
-            }
-          }
+              422: ErrorResponseSchema,
+            },
+          },
         },
 
         {
@@ -61,11 +42,11 @@ export const userRoutes = async (fastify: FastifyInstance) => {
               200: Type.Intersect([
                 BaseResponseSchema,
                 Type.Object({
-                  data: UserProfileSchema
-                })
-              ])
-            }
-          }
+                  data: UserSchema.userProfileSchema,
+                }),
+              ]),
+            },
+          },
         },
 
         {
@@ -73,26 +54,26 @@ export const userRoutes = async (fastify: FastifyInstance) => {
           url: '/sign_in',
           handler: loginUser as RouteHandlerMethod,
           schema: {
-            body: UserAuthSchema,
+            body: UserSchema.userAuthSchema,
             response: {
               200: Type.Intersect([
                 BaseResponseSchema,
                 Type.Object({
                   data: Type.Object({
                     session: Type.Object({
-                      authToken: Type.String()
-                    })
-                  })
-                })
-              ])
-            }
-          }
-        }
+                      authToken: Type.String(),
+                    }),
+                  }),
+                }),
+              ]),
+            },
+          },
+        },
       ];
 
       routes.forEach((route) => routePlugin.route(route));
     },
-    { prefix: '/users' }
+    { prefix: '/users' },
   );
 
   return server;

@@ -22,4 +22,3 @@ export const userAuthSchema = Type.Pick(UserSchema, ['email', 'password']);
 
 export type User = Static<typeof UserSchema>;
 export type UserProfile = Static<typeof userProfileSchema>;
-export type UserProfileArgs = Pick<User, 'email' | 'password' | 'username'>;

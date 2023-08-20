@@ -1,29 +1,29 @@
+import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Fastify from 'fastify';
-import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { userRoutes } from './users/users.routes.js';
-import { schemaErrorMessageGenerator } from '../../utils/error-message.js';
+import { env } from '../../config/env.js';
 import { AppError } from '../../shared/error/AppError.js';
+import { schemaErrorMessageGenerator } from '../../utils/error-message.js';
 import { mapAppErrorToApiError } from '../../utils/errors.js';
 import authentication from './plugins/authentication.js';
-import { env } from '../../config/env.js';
 import swagger from './plugins/swagger.js';
+import { userRoutes } from './users/users.routes.js';
 
 const app = Fastify({
   ignoreTrailingSlash: true,
   logger: {
     level: 'debug',
-    transport: { target: 'pino-pretty' }
-  }
+    transport: { target: 'pino-pretty' },
+  },
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 await app.register(authentication).register(swagger);
 
 app.setErrorHandler((error, request, reply) => {
-  request.log.error('An error ocurred', error);
+  request.log.error(error);
 
-  let err = {
+  const err = {
     statusCode: error.statusCode || 500,
-    error: error.message || 'Oops. Something went wrong.'
+    error: error.message || 'Oops. Something went wrong.',
   };
 
   if (error.validation) {
@@ -45,7 +45,7 @@ app.setErrorHandler((error, request, reply) => {
 app.setNotFoundHandler(function notFound(request, reply) {
   const payload = {
     success: false,
-    message: `Route ${request.method}: ${request.url} not found`
+    message: `Route ${request.method}: ${request.url} not found`,
   };
 
   reply.status(404).send(payload);

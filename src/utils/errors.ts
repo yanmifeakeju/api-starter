@@ -1,6 +1,5 @@
 import { env } from '../config/env.js';
 import { AppError } from '../shared/error/AppError.js';
-import { reportPrismaError } from './prisma-error.js';
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
   switch (value) {
@@ -19,21 +18,23 @@ const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
     case 'FATAL':
     case 'DATABASE_ERROR':
       return 500;
-
     default:
-      throw new Error(`Invalid error type ${value}`);
+      500;
   }
+
+  return 500;
 };
 
 export const mapAppErrorToApiError = (error: AppError) => {
   return {
     statusCode: convertAppErrorTypeToApiStatusCode(error.errorType),
-    message: error.message
+    message: error.message,
   };
 };
 
 export const handleAppError = (label: string, error: Error) => {
-  if (env.NODE_ENV === 'development')
-    console.error(label.toUpperCase(), ':', error.message || error);
+  if (env.NODE_ENV === 'development') console.error(label.toUpperCase(), ':', error.message || error);
+  if (error instanceof AppError) throw new AppError('FATAL', 'An unknown error occurred');
+
   throw error;
 };

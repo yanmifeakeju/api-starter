@@ -8,6 +8,6 @@ console.log(
     from: 'onboarding@yanmifeakeju.link',
     to: 'yanmifeakeju@gmail.com',
     subject: 'Hello World',
-    html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-  })
+    html: '<p>Congrats on sending your <strong>first email</strong>!</p>',
+  }),
 );

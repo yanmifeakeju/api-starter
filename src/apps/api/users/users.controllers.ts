@@ -1,17 +1,17 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { CreateUserInput } from '../../../core/modules/users/users.schema.js';
-import { UserModule } from '../../../core/index.js';
+import { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
+import { UserModule, type UserSchema } from '../../../core/index.js';
+import { AuthService, OnboardingService } from '../../../services/modules/index.js';
 
-export const registerUser = async function (
+export const registerUser = async function(
   this: FastifyInstance,
   request: FastifyRequest<{
-    Body: CreateUserInput;
+    Body: Omit<UserSchema.UserProfile & { password: string }, 'lastLogin'>;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { body } = request;
-  this.log.info('testing');
-  const response = await UserModule.createUser(body);
+
+  const response = await OnboardingService.registerUser(body);
 
   reply.status(201);
 
@@ -22,39 +22,35 @@ export const registerUser = async function (
       session: {
         authToken: await reply.jwtSign({
           userId: response.userId,
-          lastLogin: response.lastLogin
-        })
-      }
-    }
+        }),
+      },
+    },
   };
 };
 
-export const fetchUserProfile = async function (
+export const fetchUserProfile = async function(
   this: FastifyInstance,
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
-  const { user } = request as { user: { userId: string; lastLogin: Date } };
-  const response = await UserModule.findUser({ userId: user.userId });
-
-  if (user.lastLogin !== response.lastLogin)
-    request.log.info('a new session somewhere');
+  const { user } = request as { user: { userId: string } };
+  const response = await UserModule.findUniqueUser({ userId: user.userId });
 
   reply.status(200);
 
   return { success: true, message: 'Fetched user profile', data: response };
 };
 
-export const loginUser = async function (
+export const loginUser = async function(
   this: FastifyInstance,
   request: FastifyRequest<{
     Body: { email: string; password: string };
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { email, password } = request.body;
 
-  const user = await UserModule.authenticateUser({ email, password });
+  const user = await AuthService.loginUser({ email, password });
 
   reply.status(200);
 
@@ -65,9 +61,8 @@ export const loginUser = async function (
       session: {
         authToken: await reply.jwtSign({
           userId: user.userId,
-          lastLogin: user.lastLogin
-        })
-      }
-    }
+        }),
+      },
+    },
   };
 };

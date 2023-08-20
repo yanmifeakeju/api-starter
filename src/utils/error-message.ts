@@ -1,16 +1,14 @@
-import { DefinedError } from 'ajv';
-import { FastifySchemaValidationError } from 'fastify/types/schema.js';
+import { type DefinedError } from 'ajv';
+import { type FastifySchemaValidationError } from 'fastify/types/schema.js';
 export function schemaErrorMessageGenerator(
-  err: FastifySchemaValidationError[] | DefinedError[]
+  err: FastifySchemaValidationError[] | DefinedError[],
 ) {
   for (const error of err) {
     switch (error.keyword) {
       case 'required':
         return `Payload missing required property "${error.params.missingProperty}".`;
       case 'format':
-        return `"${error.instancePath.replace('/', '.')}" is not a valid ${
-          error.params.format
-        }`;
+        return `"${error.instancePath.replace('/', '.')}" is not a valid ${error.params.format}`;
       case 'minLength':
       case 'maxLength':
       case 'type':

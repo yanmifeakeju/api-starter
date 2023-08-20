@@ -6,7 +6,7 @@ const appErrorType = {
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
   FATAL: 'FATAL',
-  DATABASE_ERROR: 'DATABASE_ERROR'
+  DATABASE_ERROR: 'DATABASE_ERROR',
 } as const;
 
 type AppErrorType = (typeof appErrorType)[keyof typeof appErrorType];

@@ -1,7 +1,7 @@
+import Ajv, { type AnySchema, type DefinedError } from 'ajv';
 import addFormats from 'ajv-formats';
-import Ajv, { AnySchema, DefinedError } from 'ajv';
-import { schemaErrorMessageGenerator } from './error-message.js';
 import { AppError } from '../shared/error/AppError.js';
+import { schemaErrorMessageGenerator } from './error-message.js';
 
 export const ajv = addFormats
   .default(new Ajv.default({}), [
@@ -18,21 +18,25 @@ export const ajv = addFormats
     'uri-template',
     'json-pointer',
     'relative-json-pointer',
-    'regex'
+    'regex',
   ])
   .addKeyword('kind')
   .addKeyword('modifier');
 
-export function schemaValidator(schema: AnySchema) {
+export function schemaValidator<T>(schema: AnySchema) {
+  console.log('compililed');
   const validate = ajv.compile(schema);
 
-  return (payload: unknown) => {
+  return (payload: T) => {
     const isValid = validate(payload);
 
-    if (!isValid)
+    if (!isValid) {
       throw new AppError(
         'ILLEGAL_ARGUMENT',
-        schemaErrorMessageGenerator(validate.errors as DefinedError[])
+        schemaErrorMessageGenerator(validate.errors as DefinedError[]),
       );
+    }
+
+    return payload;
   };
 }

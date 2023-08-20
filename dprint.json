@@ -1,0 +1,26 @@
+{
+  "typescript": {
+    "quoteStyle": "preferSingle",
+    "binaryExpression.operatorPosition": "sameLine",
+    "typeParameters.trailingCommas": "onlyMultiLine",
+    "ifStatement.singleBodyPosition": "sameLine",
+    "ifStatement.bracePosition": "sameLine"
+  },
+  "json": {},
+  "markdown": {},
+  "toml": {},
+  "dockerfile": {},
+  "excludes": ["**/node_modules", "**/*-lock.json", "dist"],
+  "plugins": [
+    "https://plugins.dprint.dev/typescript-0.86.2.wasm",
+    "https://plugins.dprint.dev/json-0.17.4.wasm",
+    "https://plugins.dprint.dev/markdown-0.15.3.wasm",
+    "https://plugins.dprint.dev/toml-0.5.4.wasm",
+    "https://plugins.dprint.dev/dockerfile-0.3.0.wasm",
+    "https://plugins.dprint.dev/prettier-0.27.0.json@3557a62b4507c55a47d8cde0683195b14d13c41dda66d0f0b0e111aed107e2fe"
+  ],
+  "prettier": {
+    "useTabs": true,
+    "plugin.jsDoc": true
+  }
+}

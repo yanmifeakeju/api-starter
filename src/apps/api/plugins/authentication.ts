@@ -1,23 +1,16 @@
-import fp from 'fastify-plugin';
 import fastifyJwt from '@fastify/jwt';
+import { type FastifyReply, type FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
 import { env } from '../../../config/env.js';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { Type } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
 
-const C = Type.Object({
-  userId: Type.String(),
-  iat3: Type.Number()
-});
-
-export default fp(async function (fastify, opts) {
+export default fp(async function(fastify) {
   const myCustomMessages = {
     badRequestErrorMessage: 'Format is Authorization: Bearer [token]',
     noAuthorizationInHeaderMessage: 'Authorization header is missing!',
     authorizationTokenExpiredMessage: 'Authorization token expired',
     authorizationTokenInvalid: (err: Error) => {
       return `Authorization token is invalid: ${err.message}`;
-    }
+    },
   };
 
   fastify.register(fastifyJwt, {
@@ -39,21 +32,21 @@ export default fp(async function (fastify, opts) {
     // },
 
     sign: {
-      expiresIn: env.JWT_EXPIRES_IN
-    }
+      expiresIn: env.JWT_EXPIRES_IN,
+    },
   });
 
   fastify.decorate(
     'authenticate',
-    async function (request: FastifyRequest, reply: FastifyReply) {
+    async function(request: FastifyRequest, reply: FastifyReply) {
       try {
         const decoded = await request.jwtVerify({
-          complete: false
+          complete: false,
         });
         fastify.log.info(decoded);
       } catch (err) {
         return reply.send(err);
       }
-    }
+    },
   );
 });

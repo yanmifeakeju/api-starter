@@ -1,4 +1,4 @@
-import { Processor, Worker } from 'bullmq';
+import { type Processor, Worker } from 'bullmq';
 import { Queue } from 'bullmq';
 
 import { Redis } from 'ioredis';

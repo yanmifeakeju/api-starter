@@ -1,11 +1,30 @@
-version: "3"
+version: "2.4"
 
 services:
   api:
-    image: fastify-rest
-    init: true
+    image: api
     build:
-      context: "."
-      dockerfile: "./images/api.df"
+      target: dev
     ports:
-      - "3000:3000"
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:15.4
+    volumes:
+      - api-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+
+  redis:
+    image: redis:7.0.2
+    volumes:
+      - api-redis:/data
+
+volumes:
+  api-db:
+  api-redis:

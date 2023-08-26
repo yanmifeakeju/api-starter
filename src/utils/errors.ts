@@ -34,7 +34,7 @@ export const mapAppErrorToApiError = (error: AppError) => {
 
 export const handleAppError = (label: string, error: Error) => {
   if (env.NODE_ENV === 'development') console.error(label.toUpperCase(), ':', error.message || error);
-  if (error instanceof AppError) throw new AppError('FATAL', 'An unknown error occurred');
+  if (!(error instanceof AppError)) throw new AppError('FATAL', 'An unknown error occurred');
 
   throw error;
 };

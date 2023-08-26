@@ -16,6 +16,6 @@ export const validateFindUserCredentialsData = schemaValidator<Static<typeof fin
   findUserCredentialsSchema,
 );
 
-export const validateFindUniqueUserSchema = schemaValidator<Static<typeof findUniqueUserSchema>>(
+export const validateFindUniqueUserData = schemaValidator<Static<typeof findUniqueUserSchema>>(
   findUserCredentialsSchema,
 );

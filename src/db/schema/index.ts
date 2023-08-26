@@ -15,7 +15,7 @@ export const users = pgTable('users', {
   lastLogin: timestamp('last_login', { precision: 3, mode: 'date' })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp('updated_at'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const usersCredentials = pgTable('users_credentials', {
@@ -32,5 +32,12 @@ export const userRelations = relations(users, ({ one }) => ({
   }),
 }));
 
-export type ISaveUserEntity = Omit<InferModel<typeof users, 'insert'>, 'id'>;
-export type IUserEntity = Omit<InferModel<typeof users, 'select'>, 'id'>;
+export type ISaveUserEntity = Omit<
+  InferModel<typeof users, 'insert'>,
+  'id' | 'lastLogin' | 'createdAt' | 'deletedAt' | 'userId' | 'updatedAt'
+>;
+
+export type IUserEntity = Omit<
+  InferModel<typeof users, 'select'>,
+  'id' | 'createdAt' | 'deletedAt' | 'updatedAt'
+>;

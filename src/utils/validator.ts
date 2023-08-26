@@ -19,12 +19,12 @@ export const ajv = addFormats
     'json-pointer',
     'relative-json-pointer',
     'regex',
+    'password',
   ])
   .addKeyword('kind')
   .addKeyword('modifier');
 
 export function schemaValidator<T>(schema: AnySchema) {
-  console.log('compililed');
   const validate = ajv.compile(schema);
 
   return (payload: T) => {

@@ -1,7 +1,7 @@
-import { UserModule, type UserSchema } from '../../../core/index.js';
+import { UserModule, type UserTypes } from '../../../core/index.js';
 
-export const loginUser = async (data: Pick<UserSchema.User, 'email' | 'password'>) => {
-  const user = await UserModule.findUserWithCredentials(data);
+export const loginUser = async (data: Pick<UserTypes.User, 'email' | 'password'>) => {
+  const user = await UserModule.findWithCredentials(data);
   const lastLogin = new Date();
 
   setImmediate(() => console.log('user logged in', lastLogin));

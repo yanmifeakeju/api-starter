@@ -1,4 +1,4 @@
-import { type Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import { DateSchema } from '../../../shared/schema/index.js';
 
 export const UserSchema = Type.Object(
@@ -13,12 +13,9 @@ export const UserSchema = Type.Object(
   { additionalProperties: false },
 );
 
-export const userProfileSchema = Type.Omit(UserSchema, ['id', 'password']);
+export const userProfileSchema = Type.Pick(UserSchema, ['userId', 'email', 'username', 'lastLogin']);
 export const createUserProfileSchema = Type.Pick(UserSchema, ['email', 'password', 'username']);
 export const findUserProfileSchema = Type.Pick(Type.Partial(UserSchema), ['email', 'username']);
 export const findUserCredentialsSchema = Type.Pick(UserSchema, ['email', 'password']);
 export const findUniqueUserSchema = Type.Pick(Type.Partial(UserSchema), ['username', 'email', 'userId']);
 export const userAuthSchema = Type.Pick(UserSchema, ['email', 'password']);
-
-export type User = Static<typeof UserSchema>;
-export type UserProfile = Static<typeof userProfileSchema>;

@@ -1,11 +1,11 @@
 import { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
-import { UserModule, type UserSchema } from '../../../core/index.js';
+import { UserModule, type UserTypes } from '../../../core/index.js';
 import { AuthService, OnboardingService } from '../../../services/modules/index.js';
 
 export const registerUser = async function(
   this: FastifyInstance,
   request: FastifyRequest<{
-    Body: Omit<UserSchema.UserProfile & { password: string }, 'lastLogin'>;
+    Body: Omit<UserTypes.UserProfile & { password: string }, 'lastLogin'>;
   }>,
   reply: FastifyReply,
 ) {
@@ -34,7 +34,7 @@ export const fetchUserProfile = async function(
   reply: FastifyReply,
 ) {
   const { user } = request as { user: { userId: string } };
-  const response = await UserModule.findUniqueUser({ userId: user.userId });
+  const response = await UserModule.findUnique({ userId: user.userId });
 
   reply.status(200);
 

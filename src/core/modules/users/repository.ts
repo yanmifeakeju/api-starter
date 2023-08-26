@@ -1,17 +1,14 @@
 import { and, eq, isNull, or, placeholder } from 'drizzle-orm';
-import { users, usersCredentials } from '../../../db/schema/index.js';
+import { type ISaveUserEntity, users, usersCredentials } from '../../../db/schema/index.js';
 import { db } from '../../../libs/drizzle/index.js';
 import { type OnlyOneProperty } from '../../../types/util-types/index.js';
-import { type UserProfile } from './schema.js';
+import { type User, type UserProfile } from './types.js';
 
 export const saveUser = async ({
   email,
   username,
   password,
-}: Pick<
-  UserProfile & { password: string },
-  'email' | 'username' | 'password'
->): Promise<UserProfile> => {
+}: ISaveUserEntity & { password: string }): Promise<UserProfile> => {
   return await db.transaction(async (trx) => {
     const [user] = await trx
       .insert(users)
@@ -51,10 +48,12 @@ export const fetchUniqueUser = async ({
   userId && filter.push(eq(users.userId, userId));
   username && filter.push(eq(users.username, username));
 
+  if (filter.length === 0) throw new Error('Missing filters.');
+
   const user = await db
     .select()
     .from(users)
-    .where(or(...filter));
+    .where(filter[0]);
 
   return user.length ? user[0] : null;
 };
@@ -90,4 +89,13 @@ const fetchUserAuthCredentialsPrepared = () => {
     return userWithCreds.length ? userWithCreds[0] : null;
   };
 };
+
 export const fetchUserAuthCredentials = fetchUserAuthCredentialsPrepared();
+
+export const updateUserById = async (userId: string, data: Pick<User, 'lastLogin'>) => {
+  return await db.transaction(async (tx) => {
+    return await tx.update(users).set({ ...data }).where(
+      and(eq(users.userId, userId)),
+    ).returning();
+  });
+};

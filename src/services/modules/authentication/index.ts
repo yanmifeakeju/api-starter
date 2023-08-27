@@ -2,9 +2,10 @@ import { UserModule, type UserTypes } from '../../../core/index.js';
 
 export const loginUser = async (data: Pick<UserTypes.User, 'email' | 'password'>) => {
   const user = await UserModule.findWithCredentials(data);
-  const lastLogin = new Date();
 
-  setImmediate(() => console.log('user logged in', lastLogin));
+  const lastLogin = new Date();
+  await UserModule.updateLastLoginTime(user, lastLogin);
+
   return { ...user, lastLogin };
 };
 

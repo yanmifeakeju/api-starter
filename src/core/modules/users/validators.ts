@@ -2,7 +2,7 @@ import { type Static } from '@sinclair/typebox';
 import { schemaValidator } from '../../../utils/validator.js';
 import {
   createUserProfileSchema,
-  type findUniqueUserSchema,
+  findUniqueUserSchema,
   findUserCredentialsSchema,
   findUserProfileSchema,
 } from './schema.js';
@@ -17,5 +17,5 @@ export const validateFindUserCredentialsData = schemaValidator<Static<typeof fin
 );
 
 export const validateFindUniqueUserData = schemaValidator<Static<typeof findUniqueUserSchema>>(
-  findUserCredentialsSchema,
+  findUniqueUserSchema,
 );

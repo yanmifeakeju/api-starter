@@ -1,8 +1,8 @@
-import { and, eq, isNull, or, placeholder } from 'drizzle-orm';
+import { and, eq, isNull, or, placeholder, sql } from 'drizzle-orm';
 import { type ISaveUserEntity, users, usersCredentials } from '../../../db/schema/index.js';
 import { db } from '../../../libs/drizzle/index.js';
 import { type OnlyOneProperty } from '../../../types/util-types/index.js';
-import { type User, type UserProfile } from './types.js';
+import { type UserProfile } from './types.js';
 
 export const saveUser = async ({
   email,
@@ -92,10 +92,18 @@ const fetchUserAuthCredentialsPrepared = () => {
 
 export const fetchUserAuthCredentials = fetchUserAuthCredentialsPrepared();
 
-export const updateUserById = async (userId: string, data: Pick<User, 'lastLogin'>) => {
-  return await db.transaction(async (tx) => {
-    return await tx.update(users).set({ ...data }).where(
-      and(eq(users.userId, userId)),
-    ).returning();
+export const updateLastLogin = async (
+  userId: string,
+  { newLogin, previousLogin }: { previousLogin: Date; newLogin: Date },
+) => {
+  const [user] = await db.transaction(async (tx) => {
+    return await tx.update(users).set({ lastLogin: newLogin }).where(
+      and(
+        eq(users.userId, userId),
+        sql`${previousLogin} <= ${users.lastLogin}`,
+      ),
+    ).returning({ lastLogin: users.lastLogin });
   });
+
+  return user;
 };

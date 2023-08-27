@@ -21,10 +21,13 @@ services:
 
   postgres:
     image: postgres:15.4
+    ports:
+      - "3306:5432"
     volumes:
       - api-db:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
   redis:
     image: redis:7.0.2

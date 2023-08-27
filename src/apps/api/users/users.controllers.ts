@@ -1,5 +1,5 @@
 import { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
-import { UserModule, type UserTypes } from '../../../core/index.js';
+import { type UserTypes } from '../../../core/index.js';
 import { AuthService, OnboardingService } from '../../../services/modules/index.js';
 
 export const registerUser = async function(
@@ -34,10 +34,9 @@ export const fetchUserProfile = async function(
   reply: FastifyReply,
 ) {
   const { user } = request as { user: { userId: string } };
-  const response = await UserModule.findUnique({ userId: user.userId });
+  const response = await AuthService.getAuthUser(user.userId);
 
   reply.status(200);
-
   return { success: true, message: 'Fetched user profile', data: response };
 };
 

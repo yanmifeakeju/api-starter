@@ -9,9 +9,9 @@ export const loginUser = async (data: Pick<UserTypes.User, 'email' | 'password'>
   return { ...user, lastLogin };
 };
 
-export const getAuthUser = async (_userId: string) => {
-  // const user = await UserModule
-  throw new Error('Unimplemented yet');
+export const getAuthUser = async (userId: string) => {
+  const user = await UserModule.findUnique({ userId });
+  return user;
 };
 
 export const initiateForgotPasswordRequest = async (_email: string) => {

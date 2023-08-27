@@ -4,14 +4,20 @@ services:
   api:
     image: api
     build:
+      context: .
+      dockerfile: ./Dockerfile
       target: dev
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
     ports:
-      - "8080:8080"
+      - "${SEVER_PORT:-8080}:8080"
+      - 9229:9229
     depends_on:
       - postgres
       - redis
-    env_file:
-      - .env
 
   postgres:
     image: postgres:15.4

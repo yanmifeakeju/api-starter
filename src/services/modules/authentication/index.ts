@@ -10,7 +10,7 @@ export const loginUser = async (data: Pick<UserTypes.User, 'email' | 'password'>
 
 export const getAuthUser = async (_userId: string) => {
   // const user = await UserModule
-  throw new Error('Unimplemented');
+  throw new Error('Unimplemented yet');
 };
 
 export const initiateForgotPasswordRequest = async (_email: string) => {

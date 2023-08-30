@@ -3,24 +3,24 @@
     /* Visit https://aka.ms/tsconfig to read more about this file */
     "declaration": false,
     /* Language and Environment */
-    "target": "ES2020", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations.,
+    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations.,
 
-    /* Modules */
-    "module": "NodeNext", /* Specify what module code is generated. */
+    /* Modules */,
+    "module": "NodeNext" /* Specify what module code is generated. */,
     "resolveJsonModule": true,
     /* Emit */
     "sourceMap": true,
-    "outDir": "./dist", /* Specify an output folder for all emitted files. */
+    "outDir": "./dist" /* Specify an output folder for all emitted files. */,
     "removeComments": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     /* Type Checking */
-    "strict": true, /* Enable all strict type-checking options. */
-    "allowUnusedLabels": false, /* Disable error reporting for unused labels. */
-    "allowUnreachableCode": false, /* Disable error reporting for unreachable code. */
+    "strict": true /* Enable all strict type-checking options. */,
+    "allowUnusedLabels": false /* Disable error reporting for unused labels. */,
+    "allowUnreachableCode": false /* Disable error reporting for unreachable code. */,
 
     /* Completeness */
-    "skipLibCheck": true, /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "strictNullChecks": true
   },

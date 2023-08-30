@@ -2,71 +2,60 @@ import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Fastify from 'fastify';
 import { env } from '../../config/env.js';
 import { AppError } from '../../shared/error/AppError.js';
-import { schemaErrorMessageGenerator } from '../../utils/error-message.js';
+import { generateSchemaErrorMessage } from '../../utils/error-message.js';
 import { mapAppErrorToApiError } from '../../utils/errors.js';
 import authentication from './plugins/authentication.js';
 import swagger from './plugins/swagger.js';
 import { userRoutes } from './users/users.routes.js';
 
-const app = Fastify({
-  ignoreTrailingSlash: true,
-  logger: {
-    level: 'debug',
-    transport: { target: 'pino-pretty' },
-  },
-}).withTypeProvider<TypeBoxTypeProvider>();
+export const getServer = async () => {
+  const logger = env.NODE_ENV! === 'production'
+    ? { level: 'debug', transport: { target: 'pino-pretty' } }
+    : { level: 'info' };
 
-await app.register(authentication).register(swagger);
+  const app = Fastify({
+    ignoreTrailingSlash: true,
+    schemaErrorFormatter: function(errors, _httpPart) {
+      const error = generateSchemaErrorMessage(errors);
+      return new Error(error);
+    },
+    logger,
+  }).withTypeProvider<TypeBoxTypeProvider>();
 
-app.setErrorHandler((error, request, reply) => {
-  request.log.error(error);
+  await app.register(authentication).register(swagger);
 
-  const err = {
-    statusCode: error.statusCode || 500,
-    error: error.message || 'Oops. Something went wrong.',
-  };
+  app.setErrorHandler((error, request, reply) => {
+    request.log.error(error);
 
-  if (error.validation) {
-    err.statusCode = 400;
-    err.error = schemaErrorMessageGenerator(error.validation);
-  }
+    const err = {
+      statusCode: error.statusCode,
+      error: error.message,
+    };
 
-  if (error instanceof AppError) {
-    const appErrorToApiError = mapAppErrorToApiError(error);
-    err.statusCode = appErrorToApiError.statusCode;
-    err.error = appErrorToApiError.message;
-  }
+    if (error instanceof AppError) {
+      const appErrorToApiError = mapAppErrorToApiError(error);
+      err.statusCode = appErrorToApiError.statusCode;
+      err.error = appErrorToApiError.message;
+    }
 
-  return reply
-    .status(err.statusCode)
-    .send({ success: false, error: err.error });
-});
+    return reply
+      .status(err.statusCode || 500)
+      .send({ success: false, error: err.statusCode ? err.error : 'Oops. Something went wrong.' });
+  });
 
-app.setNotFoundHandler(function notFound(request, reply) {
-  const payload = {
-    success: false,
-    message: `Route ${request.method}: ${request.url} not found`,
-  };
+  app.get('/health-check', async () => {
+    return { status: 'OK' };
+  });
 
-  reply.status(404).send(payload);
-});
+  await app.register(userRoutes, { prefix: 'api/v1' }); // /users;
 
-app.get('/health-check', async () => {
-  return { status: 'OK' };
-});
+  app.swagger();
+  await app.ready();
 
-await app.register(userRoutes, { prefix: 'api/v1' }); // /users;
+  return app;
+};
 
-app.swagger();
-await app.ready();
-
-async function main() {
-  try {
-    await app.listen({ port: env.SERVER_PORT, host: '0.0.0.0' });
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
-  }
+if (process.argv[1] === new URL(import.meta.url).pathname) {
+  const server = await getServer();
+  await server.listen({ port: env.SERVER_PORT, host: '0.0.0.0' });
 }
-
-main();

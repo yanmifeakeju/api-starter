@@ -52,7 +52,6 @@ export const loginUser = async function(
   const user = await AuthService.loginUser({ email, password });
 
   reply.status(200);
-
   return {
     success: true,
     message: 'Successfully logged in.',

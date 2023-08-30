@@ -10,8 +10,7 @@ export const loginUser = async (data: Pick<UserTypes.User, 'email' | 'password'>
 };
 
 export const getAuthUser = async (userId: string) => {
-  const user = await UserModule.findUnique({ userId });
-  return user;
+  return UserModule.findUnique({ userId });
 };
 
 export const initiateForgotPasswordRequest = async (_email: string) => {

@@ -1,7 +1,7 @@
 import Ajv, { type AnySchema, type DefinedError } from 'ajv';
 import addFormats from 'ajv-formats';
 import { AppError } from '../shared/error/AppError.js';
-import { schemaErrorMessageGenerator } from './error-message.js';
+import { generateSchemaErrorMessage } from './error-message.js';
 
 export const ajv = addFormats
   .default(new Ajv.default({}), [
@@ -33,7 +33,7 @@ export function schemaValidator<T>(schema: AnySchema) {
     if (!isValid) {
       throw new AppError(
         'ILLEGAL_ARGUMENT',
-        schemaErrorMessageGenerator(validate.errors as DefinedError[]),
+        generateSchemaErrorMessage(validate.errors as DefinedError[]),
       );
     }
 

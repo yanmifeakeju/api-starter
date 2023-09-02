@@ -1,5 +1,7 @@
 FROM node:18.17.1-bullseye-slim as base
 
+LABEL org.opencontainers.image.title="Node API Starter"
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -7,15 +9,13 @@ RUN corepack enable
 WORKDIR /usr/src/app
 COPY package.json pnpm-lock.*  tsconfig.*  ./
 
-
-FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
 
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
 FROM base AS dev
 COPY --from=build /usr/src/app .

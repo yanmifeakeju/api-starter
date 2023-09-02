@@ -9,7 +9,7 @@ import {
   validateFindUniqueUserData,
   validateFindUserCredentialsData,
   validateFindUserProfileData,
-} from './validators.js';
+} from './validators.unit..js';
 
 const wrapper = moduleAsyncWrapper('users');
 

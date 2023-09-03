@@ -9,7 +9,7 @@ import swagger from './plugins/swagger.js';
 import { userRoutes } from './users/users.routes.js';
 
 export const getServer = async () => {
-  const logger = env.NODE_ENV! === 'production'
+  const logger = env.NODE_ENV !== 'production'
     ? { level: 'debug', transport: { target: 'pino-pretty' } }
     : { level: 'info' };
 

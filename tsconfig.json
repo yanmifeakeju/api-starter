@@ -1,14 +1,18 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig to read more about this file */
     "declaration": false,
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "./dist",
     "removeComments": true,
-    "typeRoots": ["./node_modules/@types", "./src/types"],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["src/**/*"]
 }

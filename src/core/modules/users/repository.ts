@@ -1,7 +1,7 @@
 import { and, eq, isNull, or, sql } from 'drizzle-orm';
+import { type OnlyOneProperty } from '../../../@types/util-types/index.js';
 import { type ISaveUserEntity, users, usersCredentials } from '../../../db/schema/index.js';
 import { db } from '../../../libs/drizzle/index.js';
-import { type OnlyOneProperty } from '../../../types/util-types/index.js';
 import { type UserProfile } from './types.js';
 
 type SanitizedUserProps = Pick<typeof users, 'email' | 'username' | 'userId' | 'lastLogin'>;

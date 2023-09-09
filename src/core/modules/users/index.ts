@@ -1,5 +1,5 @@
+import { type OnlyOneProperty } from '../../../@types/util-types/index.js';
 import { AppError } from '../../../shared/error/AppError.js';
-import { type OnlyOneProperty } from '../../../types/util-types/index.js';
 import { moduleAsyncWrapper } from '../../../utils/module-wrapper.js';
 import { hashPassword, verifyPassword } from '../../../utils/password.js';
 import { fetchUniqueUser, fetchUser, fetchUserAuthCredentials, saveUser, updateLastLogin } from './repository.js';
@@ -53,5 +53,5 @@ export const findWithCredentials = wrapper(
 );
 
 export const updateLastLoginTime = wrapper(async ({ userId, lastLogin }: UserProfile, time: Date) => {
-  return await updateLastLogin(userId, { newLogin: time, previousLogin: lastLogin });
+  return updateLastLogin(userId, { newLogin: time, previousLogin: lastLogin });
 });

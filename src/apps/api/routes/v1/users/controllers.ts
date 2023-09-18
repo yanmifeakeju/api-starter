@@ -1,12 +1,12 @@
-import { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify'
-import { type UserTypes } from '../../../../../core/index.js'
+import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { type FastifyInstance } from 'fastify'
+import { type FastifyReplyInferred, type FastifyRequestInferred } from '../../../../../@types/fastify/index.js'
+import { type CreateUserSchema, type GetUserSchema, type SignInUserSchema } from '../schemas/index.js'
 
 export const registerUser = async function(
   this: FastifyInstance,
-  request: FastifyRequest<{
-    Body: Omit<UserTypes.UserProfile & { password: string }, 'lastLogin'>
-  }>,
-  reply: FastifyReply,
+  request: FastifyRequestInferred<TypeBoxTypeProvider, typeof CreateUserSchema>,
+  reply: FastifyReplyInferred<TypeBoxTypeProvider, typeof CreateUserSchema>,
 ) {
   const { body } = request
 
@@ -29,8 +29,8 @@ export const registerUser = async function(
 
 export const fetchUserProfile = async function(
   this: FastifyInstance,
-  request: FastifyRequest,
-  reply: FastifyReply,
+  request: FastifyRequestInferred<TypeBoxTypeProvider, typeof GetUserSchema>,
+  reply: FastifyReplyInferred<TypeBoxTypeProvider, typeof GetUserSchema>,
 ) {
   const { user } = request as { user: { userId: string } }
   const response = await this.services.auth.getAuthUser(user.userId)
@@ -41,10 +41,8 @@ export const fetchUserProfile = async function(
 
 export const loginUser = async function(
   this: FastifyInstance,
-  request: FastifyRequest<{
-    Body: { email: string; password: string }
-  }>,
-  reply: FastifyReply,
+  request: FastifyRequestInferred<TypeBoxTypeProvider, typeof SignInUserSchema>,
+  reply: FastifyReplyInferred<TypeBoxTypeProvider, typeof SignInUserSchema>,
 ) {
   const { email, password } = request.body
 

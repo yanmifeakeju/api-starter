@@ -55,7 +55,7 @@ export const app = async (): Promise<FastifyInstance> => {
     dir: path.join(__dirname, 'routes'),
     forceESM: true,
     indexPattern: /.*routes(\.js|\.cjs|\.ts)$/i, // matches .routes files only
-    ignorePattern: /.*\.js/,
+    ignorePattern: /(.*\.js)|.*schema.*/,
     autoHooksPattern: /.*hooks(\.js|\.cjs)$/i,
     autoHooks: true,
     cascadeHooks: true,

@@ -1,13 +1,12 @@
-import { Type } from '@fastify/type-provider-typebox'
-import { type FastifyInstance, type RouteHandlerMethod, type RouteOptions } from 'fastify'
-import { UserSchema } from '../../../../../core/index.js'
-import { BaseResponseSchema, ErrorResponseSchema } from '../../../../../shared/schema/index.js'
-import { fetchUserProfile, loginUser, registerUser } from './users.controllers.js'
+import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { type FastifyInstance, type RouteHandler, type RouteHandlerMethod, type RouteOptions } from 'fastify'
+import { CreateUserSchema, GetUserSchema, SignInUserSchema } from '../schemas/index.js'
+import { fetchUserProfile, loginUser, registerUser } from './controllers.js'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export default async (fastify: FastifyInstance) => {
-  const server = fastify.withTypeProvider()
+  const server = fastify.withTypeProvider<TypeBoxTypeProvider>()
 
   server.register(
     async function(routePlugin) {
@@ -15,67 +14,27 @@ export default async (fastify: FastifyInstance) => {
         {
           method: 'POST',
           url: '/',
-          handler: registerUser as RouteHandlerMethod,
-          schema: {
-            body: UserSchema.createUserProfileSchema,
-            response: {
-              201: Type.Intersect([
-                BaseResponseSchema,
-                Type.Object({
-                  data: Type.Object({
-                    session: Type.Object({
-                      authToken: Type.String(),
-                    }),
-                  }),
-                }),
-              ]),
-              422: ErrorResponseSchema,
-            },
-          },
+          schema: CreateUserSchema,
+          handler: registerUser as RouteHandler,
         },
 
         {
           method: 'GET',
           url: '/',
-          handler: fetchUserProfile as RouteHandlerMethod,
+          schema: GetUserSchema,
           onRequest: [server.authenticate],
-          schema: {
-            response: {
-              200: Type.Intersect([
-                BaseResponseSchema,
-                Type.Object({
-                  data: UserSchema.userProfileSchema,
-                }),
-              ]),
-            },
-          },
+          handler: fetchUserProfile as RouteHandlerMethod,
         },
 
         {
           method: 'POST',
           url: '/sign_in',
           handler: loginUser as RouteHandlerMethod,
-          schema: {
-            body: UserSchema.userAuthSchema,
-            response: {
-              200: Type.Intersect([
-                BaseResponseSchema,
-                Type.Object({
-                  data: Type.Object({
-                    session: Type.Object({
-                      authToken: Type.String(),
-                    }),
-                  }),
-                }),
-              ]),
-            },
-          },
+          schema: SignInUserSchema,
         },
       ]
 
       routes.forEach((route) => routePlugin.route(route))
     },
   )
-
-  return server
 }

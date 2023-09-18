@@ -27,3 +27,21 @@ export type FastifyReplyTypebox<TSchema extends FastifySchema> = FastifyReply<
   TSchema,
   TypeBoxTypeProvider
 >
+
+export type FastifyRequestInferred<
+  Provider extends FastifyTypeProvider,
+  Schema extends FastifySchema,
+> = FastifyRequest<Record<unknown, unknown>, NonNullable<unknown>, NonNullable<unknown>, Schema, Provider>
+
+export type FastifyReplyInferred<
+  Provider extends FastifyTypeProvider,
+  Schema extends FastifySchema,
+> = FastifyReply<
+  RawServerDefault,
+  RawRequestDefaultExpression,
+  RawReplyDefaultExpression,
+  RouteGenericInterface,
+  ContextConfigDefault,
+  Schema,
+  Provider
+>

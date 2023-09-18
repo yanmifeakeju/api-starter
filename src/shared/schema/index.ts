@@ -11,13 +11,3 @@ export function Nullable<T extends TSchema>(schema: T) {
 export function StringEnum<T extends string[]>(values: [...T]) {
   return Type.Unsafe<T[number]>({ type: 'string', enum: values })
 }
-
-export const BaseResponseSchema = Type.Object({
-  success: Type.Literal(true),
-  message: Type.String(),
-})
-
-export const ErrorResponseSchema = Type.Object({
-  success: Type.Literal(false),
-  error: Type.String(),
-})

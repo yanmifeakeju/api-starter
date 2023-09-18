@@ -7,15 +7,15 @@ const appErrorType = {
   NOT_FOUND: 'NOT_FOUND',
   FATAL: 'FATAL',
   DATABASE_ERROR: 'DATABASE_ERROR',
-} as const;
+} as const
 
-type AppErrorType = (typeof appErrorType)[keyof typeof appErrorType];
+type AppErrorType = (typeof appErrorType)[keyof typeof appErrorType]
 
 export class AppError extends Error {
   constructor(public errorType: AppErrorType, public message: string) {
-    super(message);
+    super(message)
 
-    Object.setPrototypeOf(this, AppError.prototype);
-    Error.captureStackTrace(this);
+    Object.setPrototypeOf(this, AppError.prototype)
+    Error.captureStackTrace(this)
   }
 }

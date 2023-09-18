@@ -1,7 +1,7 @@
-import { Resend } from 'resend';
-import { env } from '../../config/env.js';
+import { Resend } from 'resend'
+import { env } from '../../config/env.js'
 
-const resend = new Resend(env.RESEND_API_KEY);
+const resend = new Resend(env.RESEND_API_KEY)
 
 console.log(
   await resend.emails.send({
@@ -10,4 +10,4 @@ console.log(
     subject: 'Hello World',
     html: '<p>Congrats on sending your <strong>first email</strong>!</p>',
   }),
-);
+)

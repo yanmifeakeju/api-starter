@@ -1,9 +1,9 @@
-import { type Static, Type } from '@sinclair/typebox';
-import envSchema from 'env-schema';
-import { createRequire } from 'node:module';
-import { StringEnum } from '../shared/schema/index.js';
+import { type Static, Type } from '@sinclair/typebox'
+import envSchema from 'env-schema'
+import { createRequire } from 'node:module'
+import { StringEnum } from '../shared/schema/index.js'
 
-const require = createRequire(import.meta.url);
+const require = createRequire(import.meta.url)
 
 const ConfigSchema = Type.Object({
   NODE_ENV: StringEnum(['development', 'production', 'test']),
@@ -12,9 +12,9 @@ const ConfigSchema = Type.Object({
   AUTH_JWT_SECRET: Type.String(),
   JWT_EXPIRES_IN: Type.Number(),
   RESEND_API_KEY: Type.String(),
-});
+})
 
-type Config = Static<typeof ConfigSchema>;
+type Config = Static<typeof ConfigSchema>
 
 export const env = envSchema<Config>({
   schema: ConfigSchema,
@@ -36,10 +36,10 @@ export const env = envSchema<Config>({
         'json-pointer',
         'relative-json-pointer',
         'regex',
-      ];
+      ]
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('ajv-formats')(ajvInstance, opts);
-      return ajvInstance;
+      require('ajv-formats')(ajvInstance, opts)
+      return ajvInstance
     },
   },
-});
+})

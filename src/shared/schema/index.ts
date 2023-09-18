@@ -1,23 +1,23 @@
-import { type Static, type TSchema, Type } from '@sinclair/typebox';
+import { type Static, type TSchema, Type } from '@sinclair/typebox'
 
-const DateType = <T extends TSchema>(schema: T) => Type.Unsafe<Date>({ ...schema });
+const DateType = <T extends TSchema>(schema: T) => Type.Unsafe<Date>({ ...schema })
 
-export const DateSchema = DateType(Type.String({ format: 'date-time' }));
+export const DateSchema = DateType(Type.String({ format: 'date-time' }))
 
 export function Nullable<T extends TSchema>(schema: T) {
-  return Type.Unsafe<Static<T> | null>({ ...schema, nullable: true });
+  return Type.Unsafe<Static<T> | null>({ ...schema, nullable: true })
 }
 
 export function StringEnum<T extends string[]>(values: [...T]) {
-  return Type.Unsafe<T[number]>({ type: 'string', enum: values });
+  return Type.Unsafe<T[number]>({ type: 'string', enum: values })
 }
 
 export const BaseResponseSchema = Type.Object({
   success: Type.Literal(true),
   message: Type.String(),
-});
+})
 
 export const ErrorResponseSchema = Type.Object({
   success: Type.Literal(false),
   error: Type.String(),
-});
+})

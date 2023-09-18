@@ -1,11 +1,13 @@
-import { Type, type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { type FastifyInstance, type RouteHandlerMethod, type RouteOptions } from 'fastify';
-import { UserSchema } from '../../../core/index.js';
-import { BaseResponseSchema, ErrorResponseSchema } from '../../../shared/schema/index.js';
-import { fetchUserProfile, loginUser, registerUser } from './users.controllers.js';
+import { Type } from '@fastify/type-provider-typebox'
+import { type FastifyInstance, type RouteHandlerMethod, type RouteOptions } from 'fastify'
+import { UserSchema } from '../../../../../core/index.js'
+import { BaseResponseSchema, ErrorResponseSchema } from '../../../../../shared/schema/index.js'
+import { fetchUserProfile, loginUser, registerUser } from './users.controllers.js'
 
-export const userRoutes = async (fastify: FastifyInstance) => {
-  const server = fastify.withTypeProvider<TypeBoxTypeProvider>();
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export default async (fastify: FastifyInstance) => {
+  const server = fastify.withTypeProvider()
 
   server.register(
     async function(routePlugin) {
@@ -69,12 +71,11 @@ export const userRoutes = async (fastify: FastifyInstance) => {
             },
           },
         },
-      ];
+      ]
 
-      routes.forEach((route) => routePlugin.route(route));
+      routes.forEach((route) => routePlugin.route(route))
     },
-    { prefix: '/users' },
-  );
+  )
 
-  return server;
-};
+  return server
+}

@@ -1,61 +1,68 @@
-import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import Fastify from 'fastify';
-import { env } from '../../config/env.js';
-import { AppError } from '../../shared/error/AppError.js';
-import { generateSchemaErrorMessage } from '../../utils/error-message.js';
-import { mapAppErrorToApiError } from '../../utils/errors.js';
-import authentication from './plugins/authentication.js';
-import swagger from './plugins/swagger.js';
-import { userRoutes } from './users/users.routes.js';
+import AutoLoad from '@fastify/autoload'
+import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import Fastify, { type FastifyInstance } from 'fastify'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { env } from '../../config/env.js'
+import { AppError } from '../../shared/error/AppError.js'
+import { generateSchemaErrorMessage } from '../../utils/error-message.js'
+import { mapAppErrorToApiError } from '../../utils/errors.js'
 
-export const getServer = async () => {
-  const logger = env.NODE_ENV !== 'production'
-    ? { level: 'debug', transport: { target: 'pino-pretty' } }
-    : { level: 'info' };
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-  const app = Fastify({
-    ignoreTrailingSlash: true,
+const logger = env.NODE_ENV !== 'production'
+  ? { level: 'debug', transport: { target: 'pino-pretty' } }
+  : { level: 'info' }
+
+export const app = async (): Promise<FastifyInstance> => {
+  const fastify = Fastify({
     schemaErrorFormatter: function(errors, _httpPart) {
-      const error = generateSchemaErrorMessage(errors);
-      return new Error(error);
+      const error = generateSchemaErrorMessage(errors)
+      return new Error(error)
     },
+    ignoreTrailingSlash: true,
     logger,
-  }).withTypeProvider<TypeBoxTypeProvider>();
+  }).withTypeProvider<TypeBoxTypeProvider>()
 
-  await app.register(authentication).register(swagger);
-
-  app.setErrorHandler((error, request, reply) => {
-    request.log.error(error);
+  fastify.setErrorHandler((error, request, reply) => {
+    request.log.error(error)
 
     const err = {
       statusCode: error.statusCode,
       error: error.message,
-    };
+    }
 
     if (error instanceof AppError) {
-      const appErrorToApiError = mapAppErrorToApiError(error);
-      err.statusCode = appErrorToApiError.statusCode;
-      err.error = appErrorToApiError.message;
+      const appErrorToApiError = mapAppErrorToApiError(error)
+      err.statusCode = appErrorToApiError.statusCode
+      err.error = appErrorToApiError.message
     }
 
     return reply
       .status(err.statusCode || 500)
-      .send({ success: false, error: err.statusCode ? err.error : 'Oops. Something went wrong.' });
-  });
+      .send({ success: false, error: err.statusCode ? err.error : 'Oops. Something went wrong.' })
+  })
 
-  app.get('/health-check', async () => {
-    return { status: 'OK' };
-  });
+  // Autoload plugins from plugins folder
+  fastify.register(AutoLoad, {
+    dir: path.join(__dirname, 'plugins'),
+    forceESM: true,
+  })
 
-  await app.register(userRoutes, { prefix: 'api/v1' }); // /users;
+  // Autoload routes from routes folder
+  fastify.register(AutoLoad, {
+    dir: path.join(__dirname, 'routes'),
+    forceESM: true,
+    indexPattern: /.*routes(\.js|\.cjs|\.ts)$/i, // matches .routes files only
+    ignorePattern: /.*\.js/,
+    autoHooksPattern: /.*hooks(\.js|\.cjs)$/i,
+    autoHooks: true,
+    cascadeHooks: true,
+  })
 
-  app.swagger();
-  await app.ready();
+  fastify.get('/health-check', async () => ({ status: 'OK' }))
 
-  return app;
-};
-
-if (process.argv[1] === new URL(import.meta.url).pathname) {
-  const server = await getServer();
-  await server.listen({ port: env.SERVER_PORT, host: '0.0.0.0' });
+  await fastify.ready()
+  return fastify
 }

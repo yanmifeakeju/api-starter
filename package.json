@@ -17,13 +17,14 @@
     "db:migrate:generate": "drizzle-kit generate:pg",
     "db:migrate:push": "drizzle-kit push:pg",
     "db:migrate:up": "node ./dist/db/migrate.js",
-    "start:api": "node ./dist/apps/api/index.js",
-    "start:api:dev": "tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/index.ts"
+    "start:api": "node ./dist/apps/api/start.js",
+    "start:api:dev": "tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/autoload": "^5.7.1",
     "@fastify/jwt": "^7.2.0",
     "@fastify/swagger": "^8.9.0",
     "@fastify/swagger-ui": "^1.9.3",
@@ -54,6 +55,7 @@
     "dprint": "^0.40.2",
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.48.0",
+    "fastify-tsconfig": "^1.0.1",
     "pino-pretty": "^10.2.0",
     "tsx": "^3.12.8",
     "typescript": "^5.2.2",

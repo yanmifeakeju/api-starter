@@ -1,6 +1,6 @@
-import { type InferInsertModel, type InferSelectModel, relations, sql } from 'drizzle-orm';
+import { type InferInsertModel, type InferSelectModel, relations, sql } from 'drizzle-orm'
 
-import { integer, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { integer, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey().notNull(),
@@ -18,13 +18,13 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at', { precision: 3, mode: 'date' }).default(
     sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`,
   ).notNull(),
-});
+})
 
 export const usersCredentials = pgTable('users_credentials', {
   id: serial('id').primaryKey().notNull(),
   password: text('password').notNull(),
   userId: integer('user_id').references(() => users.id),
-});
+})
 
 // Define Relations
 export const userRelations = relations(users, ({ one }) => ({
@@ -32,14 +32,14 @@ export const userRelations = relations(users, ({ one }) => ({
     fields: [users.id],
     references: [usersCredentials.userId],
   }),
-}));
+}))
 
 export type ISaveUserEntity = Omit<
   InferInsertModel<typeof users>,
   'id' | 'lastLogin' | 'createdAt' | 'deletedAt' | 'userId' | 'updatedAt'
->;
+>
 
 export type IUserEntity = Omit<
   InferSelectModel<typeof users>,
   'id' | 'createdAt' | 'deletedAt' | 'updatedAt'
->;
+>

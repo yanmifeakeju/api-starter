@@ -1,3 +1,3 @@
-import { describe } from 'vitest';
+import { describe } from 'vitest'
 
-describe.todo('User registration test');
+describe.todo('User registration test')

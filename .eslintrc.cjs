@@ -2,7 +2,7 @@
 
 const config = {
   env: {
-    node: true,
+    node: true
   },
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   parser: '@typescript-eslint/parser',
@@ -13,11 +13,11 @@ const config = {
       'warn',
       {
         prefer: 'type-imports',
-        fixStyle: 'inline-type-imports',
-      },
+        fixStyle: 'inline-type-imports'
+      }
     ],
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-  },
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
+  }
 };
 
 module.exports = config;

@@ -1,7 +1,7 @@
-import Ajv, { type AnySchema, type DefinedError } from 'ajv';
-import addFormats from 'ajv-formats';
-import { AppError } from '../shared/error/AppError.js';
-import { generateSchemaErrorMessage } from './error-message.js';
+import Ajv, { type AnySchema, type DefinedError } from 'ajv'
+import addFormats from 'ajv-formats'
+import { AppError } from '../shared/error/AppError.js'
+import { generateSchemaErrorMessage } from './error-message.js'
 
 export const ajv = addFormats
   .default(new Ajv.default({}), [
@@ -22,21 +22,21 @@ export const ajv = addFormats
     'password',
   ])
   .addKeyword('kind')
-  .addKeyword('modifier');
+  .addKeyword('modifier')
 
 export function schemaValidator<T>(schema: AnySchema) {
-  const validate = ajv.compile(schema);
+  const validate = ajv.compile(schema)
 
   return (payload: T) => {
-    const isValid = validate(payload);
+    const isValid = validate(payload)
 
     if (!isValid) {
       throw new AppError(
         'ILLEGAL_ARGUMENT',
         generateSchemaErrorMessage(validate.errors as DefinedError[]),
-      );
+      )
     }
 
-    return payload;
-  };
+    return payload
+  }
 }

@@ -1,20 +1,20 @@
-import { type FastifyInstance } from 'fastify';
-import { afterAll, beforeAll, expect, test } from 'vitest';
-import { getServer } from './index.js';
+import { type FastifyInstance } from 'fastify'
+import { afterAll, beforeAll, expect, test } from 'vitest'
+import { app } from './index.js'
 
-let app: FastifyInstance;
+let server: FastifyInstance
 
 beforeAll(async () => {
-  app = await getServer();
-});
+  server = await app()
+})
 
 afterAll(async () => {
-  app.close();
-});
+  server.close()
+})
 
 test('should return OK', async () => {
-  const response = await app.inject({ url: '/health-check' });
-  const data = response.json();
-  expect(data.status).toBe('OK');
-  await app.close();
-});
+  const response = await server.inject({ url: '/health-check' })
+  const data = response.json()
+  expect(data.status).toBe('OK')
+  await server.close()
+})

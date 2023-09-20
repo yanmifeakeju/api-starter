@@ -3,6 +3,7 @@ import {
   type ContextConfigDefault,
   type FastifyReply,
   type FastifyRequest,
+  type FastifyTypeProvider,
   type RawReplyDefaultExpression,
   type RawRequestDefaultExpression,
   type RawServerDefault,

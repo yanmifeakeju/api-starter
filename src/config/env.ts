@@ -4,12 +4,14 @@ import { createRequire } from 'node:module'
 import { StringEnum } from '../shared/schema/index.js'
 
 const require = createRequire(import.meta.url)
+const environment = process.env.NODE_ENV || 'development'
+const config = require(`./${environment}.config.json`)
 
 const ConfigSchema = Type.Object({
-  NODE_ENV: StringEnum(['development', 'production', 'test']),
+  NODE_ENV: StringEnum(['development', 'production', 'test', 'local']),
   SERVER_PORT: Type.Number(),
-  DATABASE_URL: Type.String(),
-  AUTH_JWT_SECRET: Type.String(),
+  DATABASE_URL: Type.String({ format: 'uri' }),
+  AUTH_JWT_SECRET: Type.String({ minLength: 10 }),
   JWT_EXPIRES_IN: Type.Number(),
   RESEND_API_KEY: Type.String(),
 })
@@ -18,6 +20,7 @@ type Config = Static<typeof ConfigSchema>
 
 export const env = envSchema<Config>({
   schema: ConfigSchema,
+  data: config,
   dotenv: true,
   ajv: {
     customOptions(ajvInstance) {

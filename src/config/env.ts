@@ -3,8 +3,13 @@ import envSchema from 'env-schema'
 import { createRequire } from 'node:module'
 import { StringEnum } from '../shared/schema/index.js'
 
+const environment = process.env.NODE_ENV
+if (!environment) {
+  console.log('NODE_ENV is not set')
+  process.exit(1)
+}
+
 const require = createRequire(import.meta.url)
-const environment = process.env.NODE_ENV || 'development'
 const config = require(`./${environment}.config.json`)
 
 const ConfigSchema = Type.Object({
@@ -21,7 +26,6 @@ type Config = Static<typeof ConfigSchema>
 export const env = envSchema<Config>({
   schema: ConfigSchema,
   data: config,
-  dotenv: true,
   ajv: {
     customOptions(ajvInstance) {
       const opts = [

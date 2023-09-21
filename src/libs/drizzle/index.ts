@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import * as Postgres from 'postgres'
 import { env } from '../../config/env.js'
-import * as schema from '../../db/schema/index.js'
+import * as schema from '../../databases/schema/index.js'
 
 const postgres = Postgres.default
 

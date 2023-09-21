@@ -1,4 +1,4 @@
-import { type InferInsertModel, type InferSelectModel, relations, sql } from 'drizzle-orm'
+import { type InferInsertModel, type InferSelectModel, relations } from 'drizzle-orm'
 
 import { integer, pgTable, serial, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 
@@ -15,9 +15,7 @@ export const users = pgTable('users', {
   lastLogin: timestamp('last_login', { precision: 3, mode: 'date' })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp('updated_at', { precision: 3, mode: 'date' }).default(
-    sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`,
-  ).notNull(),
+  updatedAt: timestamp('updated_at', { precision: 3, mode: 'date' }).notNull().defaultNow(),
 })
 
 export const usersCredentials = pgTable('users_credentials', {

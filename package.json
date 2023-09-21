@@ -14,7 +14,8 @@
     "build:watch": "tsc -p tsconfig.build.json -w",
     "test:integration": "vitest run tests/**",
     "test": "vitest run",
-    "db-schema": "dotenv --  npx @databases/pg-schema-cli --directory src/databases/postgres/schema",
+    "db:schema": "dotenv --  npx @databases/pg-schema-cli --directory src/databases/postgres/schema",
+    "db:migrate": "dotenv -- npx pg-migrations apply --directory src/databases/postgres/migrations",
     "start:api": "./dist/apps/api/start.js",
     "start:api:dev": "NODE_ENV=development tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts",
     "start:api:local": "NODE_ENV=local tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts"

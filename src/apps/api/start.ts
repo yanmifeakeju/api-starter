@@ -1,5 +1,5 @@
 import { env } from '../../config/env.js'
-import db from '../../databases/postgres/connection.js'
+import db from '../../databases/postgres/index.js'
 import { app } from './index.js'
 
 const server = await app()

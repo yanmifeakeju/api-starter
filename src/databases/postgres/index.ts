@@ -8,9 +8,9 @@ const db: ConnectionPool = createConnectionPool({ connectionString: env.DATABASE
 
 const require = createRequire(import.meta.url)
 
-const { users } = tables<DatabaseSchema>({
+const { users, transactions, user_credentials } = tables<DatabaseSchema>({
   databaseSchema: require('./schema/schema.json'),
 })
 
 export default db
-export { sql, users }
+export { sql, transactions, user_credentials, users }

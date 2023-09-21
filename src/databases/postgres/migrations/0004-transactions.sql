@@ -1,0 +1,5 @@
+CREATE TABLE
+  IF NOT EXISTS transactions (
+    id SERIAL NOT NULL PRIMARY KEY,
+    password TEXT NOT NULL
+  );

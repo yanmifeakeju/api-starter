@@ -1,121 +1,143 @@
-import { and, eq, isNull, or, sql } from 'drizzle-orm'
-import { type OnlyOneProperty } from '../../../@types/util-types/index.js'
-import { type ISaveUserEntity, users, usersCredentials } from '../../../databases/schema/index.js'
-import { db } from '../../../libs/drizzle/index.js'
-import { type UserProfile } from './types.js'
-
-type SanitizedUserProps = Pick<typeof users, 'email' | 'username' | 'userId' | 'lastLogin'>
-
-const sanitizedUserFields: SanitizedUserProps = {
-  email: users.email,
-  lastLogin: users.lastLogin,
-  userId: users.userId,
-  username: users.username,
-}
+import { sql, type Transaction } from '@databases/pg'
+import { anyOf, greaterThan, or } from '@databases/pg-typed'
+import { type OnlyOneProperty } from '../../../@types/util-types'
+import db, { user_credentials, users } from '../../../databases/postgres'
+import { type UserCredentials } from '../../../databases/postgres/schema'
+import { type User, type UserProfile } from './types'
 
 export const saveUser = async ({
   email,
   username,
   password,
-}: ISaveUserEntity & { password: string }): Promise<UserProfile> => {
-  return await db.transaction(async (trx) => {
-    const [record] = await trx
-      .insert(users)
-      .values({ email, username })
-      .returning({ ...sanitizedUserFields, recordId: users.id })
+  phone,
+}: Pick<User, 'email' | 'username' | 'password' | 'phone'>): Promise<UserProfile> => {
+  const user = await db.tx(async (connection: Transaction) => {
+    const user = await users(connection).insert({
+      email,
+      username,
+      phone,
+    })
 
-    const { recordId, ...user } = record
+    await user_credentials(connection).insert({
+      credential_type: 'password',
+      credential_value: password,
+      user_id: user[0].id,
+    })
 
-    await trx.insert(usersCredentials).values({ userId: recordId, password })
-
-    return user
+    return user[0]
   })
+
+  return {
+    email: user.email,
+    lastLogin: user.last_login!,
+    userId: user.user_id!,
+    username: user.username,
+    phone: user.phone,
+  }
 }
 
+// Type this to be at least one
 export const fetchUser = async ({
   email,
   username,
-}: Partial<Omit<UserProfile, 'lastLogin' | 'userId'>>) => {
-  const filter = []
+  phone,
+}: Partial<Omit<UserProfile, 'lastLogin' | 'userId'>>): Promise<UserProfile | null> => {
+  const user = await users(db).find(or({
+    ...(email && { email }),
+    ...(username && { username }),
+    ...(phone && { phone }),
+  })).andWhere({ deleted_at: null }).select('email', 'username', 'user_id', 'last_login', 'phone').one()
 
-  email && filter.push(eq(users.email, email))
-  username && filter.push(eq(users.username, username))
-
-  const user = await db
-    .select(sanitizedUserFields)
-    .from(users)
-    .where(or(...filter))
-
-  return user.length ? user[0] : null
+  return user && {
+    email: user.email,
+    lastLogin: user.last_login!,
+    userId: user.user_id!,
+    username: user.username,
+    phone: user.phone,
+  }
 }
 
 export const fetchUniqueUser = async ({
   email,
   userId,
   username,
+  phone,
 }: OnlyOneProperty<Omit<UserProfile, 'lastLogin'>>) => {
-  const filter = []
+  const user = await users(db).find({
+    ...(email && { email }),
+    ...(username && { username }),
+    ...(phone && { phone }),
+    ...(userId && { user_id: userId }),
+  }).andWhere({ deleted_at: null }).select('email', 'username', 'user_id', 'last_login', 'phone').one()
 
-  email && filter.push(eq(users.email, email))
-  userId && filter.push(eq(users.userId, userId))
-  username && filter.push(eq(users.username, username))
-
-  if (filter.length === 0) throw new Error('Missing filters.')
-
-  const user = await db
-    .select(sanitizedUserFields)
-    .from(users)
-    .where(filter[0])
-
-  return user.length ? user[0] : null
-}
-
-export const fetchUserByIdPrepared = () => {
-  const prepared = db
-    .select(sanitizedUserFields)
-    .from(users)
-    .where(eq(users.userId, sql.placeholder('userId')))
-    .prepare('fetch_user_id')
-  return async (userId: string) => {
-    const user = await prepared.execute({ userId })
-    return user.length ? user[0] : null
+  return user && {
+    email: user.email,
+    lastLogin: user.last_login!,
+    userId: user.user_id!,
+    username: user.username,
+    phone: user.phone,
   }
 }
 
-export const fetchUserById = fetchUserByIdPrepared()
+export const fetchUserById = async (userId: string) => {
+  const user = await users(db).find({ user_id: userId }).andWhere({ deleted_at: null }).select(
+    'email',
+    'username',
+    'user_id',
+    'last_login',
+    'phone',
+  ).one()
 
-const fetchUserAuthCredentialsPrepared = () => {
-  const prepared = db
-    .select({
-      user: sanitizedUserFields,
-      cred: {
-        password: usersCredentials.password,
-      },
-    })
-    .from(users)
-    .innerJoin(usersCredentials, eq(users.id, usersCredentials.userId))
-    .where(and(eq(users.email, sql.placeholder('email')), isNull(users.deletedAt)))
-    .prepare('fetch_auth_creds')
-  return async (email: string) => {
-    const userWithCreds = await prepared.execute({ email })
-    return userWithCreds.length ? userWithCreds[0] : null
+  return user && {
+    email: user.email,
+    lastLogin: user.last_login!,
+    userId: user.user_id!,
+    username: user.username,
+    phone: user.phone,
   }
 }
 
-export const fetchUserAuthCredentials = fetchUserAuthCredentialsPrepared()
+type UserAuthCreds = UserProfile & { credentialValue: UserCredentials['credential_value'] }
+
+export const fetchUserAuthCredentials = async (email: string, credentialType = 'password'): Promise<UserAuthCreds> => {
+  const result = await db.query(sql`
+    SELECT *
+    FROM ${user_credentials(db).tableId} AS uc
+    JOIN ${users(db).tableId} AS u
+    ON uc.user_id = u.id
+    WHERE ${users(db).conditionToSql({ email }, `u`)} AND ${users(db).conditionToSql({ deleted_at: null }, `u`)}
+    AND ${user_credentials(db).conditionToSql({ credential_type: credentialType }, `uc`)}
+  `)
+
+  const data = result[0]
+
+  if (!data) return data
+
+  const user = {
+    email: data.email,
+    phone: data.phone,
+    username: data.username,
+    userId: data.user_id,
+    lastLogin: data.last_login,
+  }
+
+  const credentialValue = data.credential_value
+  return { ...user, credentialValue }
+}
 
 export const updateLastLogin = async (
   userId: string,
-  { newLogin, previousLogin }: { previousLogin: Date; newLogin: Date },
+  { currentLogin, previousLogin }: { previousLogin: Date; currentLogin: Date },
 ) => {
-  const [user] = await db.transaction(async (tx) => {
-    return await tx.update(users).set({ lastLogin: newLogin }).where(
-      and(
-        eq(users.userId, userId),
-        sql`${previousLogin} <= ${users.lastLogin}`,
-      ),
-    ).returning({ lastLogin: users.lastLogin })
-  })
+  await db.tx(async (connection: Transaction) => {
+    const user = await users(connection).update({
+      last_login: anyOf([greaterThan(previousLogin), previousLogin]),
+      user_id: userId,
+      deleted_at: null,
+    }, {
+      last_login: currentLogin,
+    })
 
-  return user
+    return user
+  })
 }

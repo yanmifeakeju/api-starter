@@ -18,7 +18,7 @@
     "db:migrate": "dotenv -- npx pg-migrations apply --directory src/databases/postgres/migrations",
     "start:api": "./dist/apps/api/start.js",
     "start:api:dev": "NODE_ENV=development tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts",
-    "start:api:local": "NODE_ENV=local tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts"
+    "start:api:local": "NODE_ENV=local tsx watch --inspect=0.0.0.0:9229  --trace-warnings  ./src/apps/api/start.ts"
   },
   "keywords": [],
   "author": "",
@@ -37,7 +37,6 @@
     "bcryptjs": "^2.4.3",
     "bullmq": "^4.11.2",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.28.6",
     "env-schema": "^5.2.0",
     "fastify": "^4.23.2",
     "fastify-plugin": "^4.5.1",
@@ -46,14 +45,11 @@
     "pg": "^8.11.3",
     "postgrator": "^7.2.0",
     "postgres": "^3.3.5",
-    "resend": "^1.1.0",
-    "short-uuid": "^4.2.2"
+    "resend": "^1.1.0"
   },
   "devDependencies": {
     "@databases/pg-migrations": "^5.0.2",
     "@databases/pg-schema-cli": "^4.3.1",
-    "@faker-js/faker": "^8.1.0",
-    "@tsconfig/node18": "^18.2.2",
     "@types/bcryptjs": "^2.4.4",
     "@types/node": "^20.6.3",
     "@types/pg": "^8.10.2",
@@ -63,7 +59,6 @@
     "dprint": "^0.40.2",
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.49.0",
-    "fastify-tsconfig": "^1.0.1",
     "pino-pretty": "^10.2.0",
     "tsx": "^3.12.10",
     "typescript": "^4.9.5",

@@ -9,14 +9,14 @@ import {
   validateFindUniqueUserData,
   validateFindUserCredentialsData,
   validateFindUserProfileData,
-} from './validators.unit..js'
+} from './validators.js'
 
 const wrapper = moduleAsyncWrapper('users')
 
 export const create = wrapper(
   async (input: Omit<User, 'userId' | 'lastLogin' | 'id'>): Promise<UserProfile> => {
-    const { email, password, username } = validateCreateUserData(input)
-    return saveUser({ email, password: await hashPassword(password), username })
+    const { email, password, username, phone } = validateCreateUserData(input)
+    return saveUser({ email, password: await hashPassword(password), username, phone })
   },
 )
 
@@ -28,9 +28,9 @@ export const find = wrapper(
 )
 
 export const findUnique = wrapper(
-  async (input: OnlyOneProperty<Pick<User, 'email' | 'username' | 'userId'>>): Promise<UserProfile> => {
+  async (input: OnlyOneProperty<Pick<User, 'email' | 'username' | 'userId' | 'phone'>>): Promise<UserProfile> => {
     validateFindUniqueUserData(input)
-    const user = await fetchUniqueUser(input);
+    const user = await fetchUniqueUser(input)
 
     if (!user) throw new AppError('NOT_FOUND', 'User not found.')
 
@@ -45,13 +45,13 @@ export const findWithCredentials = wrapper(
 
     if (!result) throw new AppError('ILLEGAL_ARGUMENT', 'Invalid credentials.')
 
-    const isUserCreds = await verifyPassword(data.password, result.cred.password)
+    const isUserCreds = await verifyPassword(data.password, result.credentialValue)
     if (!isUserCreds) throw new AppError('ILLEGAL_ARGUMENT', 'Invalid credentials.')
 
-    return result.user
+    return result
   },
 )
 
 export const updateLastLoginTime = wrapper(async ({ userId, lastLogin }: UserProfile, time: Date) => {
-  return updateLastLogin(userId, { newLogin: time, previousLogin: lastLogin })
+  return updateLastLogin(userId, { currentLogin: time, previousLogin: lastLogin })
 })

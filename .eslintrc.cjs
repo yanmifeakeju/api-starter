@@ -9,6 +9,7 @@ const config = {
   plugins: ['@typescript-eslint'],
   root: true,
   rules: {
+    // 'no-console': 2,
     '@typescript-eslint/consistent-type-imports': [
       'warn',
       {

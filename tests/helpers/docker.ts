@@ -7,7 +7,7 @@ type ContainerOptionsMap = {
 
 const Containers: Record<keyof ContainerOptionsMap, Dockerode.ContainerCreateOptions> = {
   mongo: {
-    name: 'test-mongo-db',
+    name: 'test_mongo_db',
     Image: 'mongo',
     Tty: false,
 

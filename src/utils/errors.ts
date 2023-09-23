@@ -1,5 +1,5 @@
 import { env } from '../config/env.js'
-import { AppError } from '../shared/error/AppError.js'
+import { type AppError } from '../shared/error/AppError.js'
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
   switch (value) {
@@ -33,8 +33,7 @@ export const mapAppErrorToApiError = (error: AppError) => {
 }
 
 export const handleAppError = (label: string, error: Error) => {
-  if (env.NODE_ENV === 'development') console.error(label.toUpperCase(), ':', error.message || error)
-  if (!(error instanceof AppError)) throw new AppError('FATAL', 'Internal Server Error.')
+  if (env.NODE_ENV !== 'production') console.error(label.toUpperCase(), ':', error.message || error)
 
   throw error
 }

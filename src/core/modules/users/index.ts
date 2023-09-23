@@ -1,9 +1,11 @@
 import { type OnlyOneProperty } from '../../../@types/util-types/index.js'
+import db from '../../../databases/postgres/index.js'
 import { AppError } from '../../../shared/error/AppError.js'
 import { moduleAsyncWrapper } from '../../../utils/module-wrapper.js'
 import { hashPassword, verifyPassword } from '../../../utils/password.js'
 import { fetchUniqueUser, fetchUser, fetchUserAuthCredentials, saveUser, updateLastLogin } from './repository.js'
 import { type User, type UserProfile } from './types.js'
+
 import {
   validateCreateUserData,
   validateFindUniqueUserData,
@@ -16,21 +18,21 @@ const wrapper = moduleAsyncWrapper('users')
 export const create = wrapper(
   async (input: Omit<User, 'userId' | 'lastLogin' | 'id'>): Promise<UserProfile> => {
     const { email, password, username, phone } = validateCreateUserData(input)
-    return saveUser({ email, password: await hashPassword(password), username, phone })
+    return saveUser({ email, password: await hashPassword(password), username, phone }, db)
   },
 )
 
 export const find = wrapper(
   async (input: Partial<Pick<User, 'email' | 'username'>>): Promise<UserProfile | null> => {
     const data = validateFindUserProfileData(input)
-    return fetchUser(data)
+    return fetchUser(data, db)
   },
 )
 
 export const findUnique = wrapper(
   async (input: OnlyOneProperty<Pick<User, 'email' | 'username' | 'userId' | 'phone'>>): Promise<UserProfile> => {
     validateFindUniqueUserData(input)
-    const user = await fetchUniqueUser(input)
+    const user = await fetchUniqueUser(input, db)
 
     if (!user) throw new AppError('NOT_FOUND', 'User not found.')
 
@@ -41,7 +43,7 @@ export const findUnique = wrapper(
 export const findWithCredentials = wrapper(
   async (input: Pick<User, 'email' | 'password'>): Promise<UserProfile> => {
     const data = validateFindUserCredentialsData(input)
-    const result = await fetchUserAuthCredentials(data.email)
+    const result = await fetchUserAuthCredentials({ email: data.email, credentialType: 'password' }, db)
 
     if (!result) throw new AppError('ILLEGAL_ARGUMENT', 'Invalid credentials.')
 
@@ -53,5 +55,5 @@ export const findWithCredentials = wrapper(
 )
 
 export const updateLastLoginTime = wrapper(async ({ userId, lastLogin }: UserProfile, time: Date) => {
-  return updateLastLogin(userId, { currentLogin: time, previousLogin: lastLogin })
+  return updateLastLogin(userId, { currentLogin: time, previousLogin: lastLogin }, db)
 })

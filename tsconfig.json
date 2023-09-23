@@ -9,6 +9,7 @@
     "moduleResolution": "Node",
     "declaration": false,
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "outDir": "./dist",
     "removeComments": true,
@@ -20,5 +21,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "tests/**/*"]
 }

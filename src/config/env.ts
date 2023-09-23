@@ -10,7 +10,7 @@ if (!environment) {
 }
 
 const require = createRequire(import.meta.url)
-const config = require(`./${environment}.config.json`)
+const config = require(`./${environment}.env.json`)
 
 const ConfigSchema = Type.Object({
   NODE_ENV: StringEnum(['development', 'production', 'test', 'local']),

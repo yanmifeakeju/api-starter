@@ -1,7 +1,7 @@
-import { sql, type Transaction } from '@databases/pg'
+import { type Queryable, sql, type Transaction } from '@databases/pg'
 import { anyOf, greaterThan, or } from '@databases/pg-typed'
 import { type OnlyOneProperty } from '../../../@types/util-types'
-import db, { user_credentials, users } from '../../../databases/postgres'
+import { user_credentials, users } from '../../../databases/postgres'
 import { type UserCredentials } from '../../../databases/postgres/schema'
 import { type User, type UserProfile } from './types'
 
@@ -10,7 +10,7 @@ export const saveUser = async ({
   username,
   password,
   phone,
-}: Pick<User, 'email' | 'username' | 'password' | 'phone'>): Promise<UserProfile> => {
+}: Pick<User, 'email' | 'username' | 'password' | 'phone'>, db: Queryable): Promise<UserProfile> => {
   const user = await db.tx(async (connection: Transaction) => {
     const user = await users(connection).insert({
       email,
@@ -41,7 +41,7 @@ export const fetchUser = async ({
   email,
   username,
   phone,
-}: Partial<Omit<UserProfile, 'lastLogin' | 'userId'>>): Promise<UserProfile | null> => {
+}: Partial<Omit<UserProfile, 'lastLogin' | 'userId'>>, db: Queryable): Promise<UserProfile | null> => {
   const user = await users(db).find(or({
     ...(email && { email }),
     ...(username && { username }),
@@ -62,7 +62,7 @@ export const fetchUniqueUser = async ({
   userId,
   username,
   phone,
-}: OnlyOneProperty<Omit<UserProfile, 'lastLogin'>>) => {
+}: OnlyOneProperty<Omit<UserProfile, 'lastLogin'>>, db: Queryable) => {
   const user = await users(db).find({
     ...(email && { email }),
     ...(username && { username }),
@@ -79,7 +79,7 @@ export const fetchUniqueUser = async ({
   }
 }
 
-export const fetchUserById = async (userId: string) => {
+export const fetchUserById = async (userId: string, db: Queryable) => {
   const user = await users(db).find({ user_id: userId }).andWhere({ deleted_at: null }).select(
     'email',
     'username',
@@ -99,7 +99,10 @@ export const fetchUserById = async (userId: string) => {
 
 type UserAuthCreds = UserProfile & { credentialValue: UserCredentials['credential_value'] }
 
-export const fetchUserAuthCredentials = async (email: string, credentialType = 'password'): Promise<UserAuthCreds> => {
+export const fetchUserAuthCredentials = async (
+  { email, credentialType }: { email: string; credentialType: string },
+  db: Queryable,
+): Promise<UserAuthCreds> => {
   const result = await db.query(sql`
     SELECT *
     FROM ${user_credentials(db).tableId} AS uc
@@ -128,6 +131,7 @@ export const fetchUserAuthCredentials = async (email: string, credentialType = '
 export const updateLastLogin = async (
   userId: string,
   { currentLogin, previousLogin }: { previousLogin: Date; currentLogin: Date },
+  db: Queryable,
 ) => {
   await db.tx(async (connection: Transaction) => {
     const user = await users(connection).update({

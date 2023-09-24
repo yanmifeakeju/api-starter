@@ -12,17 +12,15 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc -p tsconfig.build.json",
-    "build:watch": "tsc -p tsconfig.build.json -w",
-    "test:integration": "vitest run tests/**",
     "pretest-script": "tsx tests/scripts/pre-test.ts",
     "pretest": "env-cmd -f src/config/test.env.json --use-shell \"npm run pretest-script && npm run db:migrate\"",
     "test": "env-cmd -f src/config/test.env.json --use-shell \"npm run db:schema && vitest run\"",
-    "posttest": "NODE_ENV=test tsx tests/scripts/post-test.ts",
+    "posttest": "tsx tests/scripts/post-test.ts",
     "db:schema": "npx @databases/pg-schema-cli --directory src/databases/postgres/schema",
     "db:migrate": "npx pg-migrations apply --directory src/databases/postgres/migrations",
     "start:api": "./dist/apps/api/start.js",
     "start:api:dev": "env-cmd -f src/config/development.env.json tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts",
-    "start:api:local": "env-cmd -f src/config/local.env.json tsx watch --inspect=0.0.0.0:9229  --trace-warnings  ./src/apps/api/start.ts"
+    "start:api:local": "env-cmd -f src/config/local.env.json --use-shell \"pnpm run db:migrate  tsx watch --inspect=0.0.0.0:9229  --trace-warnings  ./src/apps/api/start.ts\""
   },
   "keywords": [],
   "author": "",

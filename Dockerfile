@@ -23,7 +23,6 @@ RUN pnpm run build
 
 FROM base AS dev
 ENV NODE_ENV=development
-COPY --from=build /usr/src/app .
 COPY . .
 CMD [ "pnpm", "start:api:dev" ]
 

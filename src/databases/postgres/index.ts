@@ -33,6 +33,12 @@ const db: ConnectionPool = createConnectionPool.default({
 			`${env.NODE_ENV.toUpperCase()}: ${new Date().toISOString()} ERROR QUERY ${text} - ${err.message}`,
 		)
 	},
+
+	onConnectionClosed() {
+		console.log(
+			`${env.NODE_ENV.toUpperCase()}: Closing Database Connection`,
+		)
+	},
 })
 
 const require = createRequire(import.meta.url)

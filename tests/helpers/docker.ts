@@ -1,8 +1,7 @@
 import { default as Docker, type default as Dockerode } from 'dockerode'
 type ContainerOptionsMap = {
-  mongo: Dockerode.ContainerCreateOptions // Define the type for 'mongo' container
-  postgres: Dockerode.ContainerCreateOptions // Define the type for 'postgres' container
-  // Add more container names and types as needed
+  mongo: Dockerode.ContainerCreateOptions
+  postgres: Dockerode.ContainerCreateOptions
 }
 
 const Containers: Record<keyof ContainerOptionsMap, Dockerode.ContainerCreateOptions> = {
@@ -22,7 +21,6 @@ const Containers: Record<keyof ContainerOptionsMap, Dockerode.ContainerCreateOpt
   postgres: {
     name: 'test_postgres_db',
     Image: 'postgres',
-    Hostname: 'test_postgres_db',
     Tty: false,
     Env: ['POSTGRES_PASSWORD=postgres'],
     HostConfig: {

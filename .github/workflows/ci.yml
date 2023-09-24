@@ -1,5 +1,7 @@
 name: CI
 on: [push, pull_request]
+env:
+  NODE_ENV: test
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -7,6 +9,16 @@ jobs:
       matrix:
         node-version: [18]
     steps:
+      - uses: antfu/action-write-config
+        with:
+          path: './config/test.env.json'
+          data:
+            NODE_ENV: ${{env.NODE_ENV}}
+            JWT_EXPIRES_IN: ${{ env.JWT_EXPIRES_IN }}
+            SERVER_PORT: ${{ env.SERVER_PORT }}
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            AUTH_JWT_SECRET: ${{ secrets.AUTH_JWT_SECRET }}
+            RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with:
@@ -16,7 +28,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+      - name: List files
+        run: ll -a
       - name: Install dependencies
         run: pnpm install
       - name: Run Tests
         run: pnpm test
+
+  #
+  # with:
+  #   # the file path to be saved, yaml is also supported
+  #   path: 'config.json'
+
+  #   # can be an object
+  # data:
+  #   foo: 'bar'
+  #   hello: 'world'

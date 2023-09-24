@@ -18,7 +18,7 @@
     "posttest": "tsx tests/scripts/post-test.ts",
     "db:schema": "npx @databases/pg-schema-cli --directory src/databases/postgres/schema",
     "db:migrate": "npx pg-migrations apply --directory src/databases/postgres/migrations && pnpm run db:schema",
-    "start:api": "env-cmd -f dist/config/$NODE_ENV.env.json --use-shell \"pnpm db:migrate && node ./dist/apps/api/start.js\"",
+    "start:api": "env-cmd -f dist/config/$NODE_ENV.env.json --use-shell \"node ./dist/apps/api/start.js\"",
     "start:api:dev": "NODE_ENV=development && env-cmd -f src/config/$NODE_ENV.env.json --use-shell \"pnpm run db:migrate && tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts\"",
     "start:api:local": "NODE_ENV=local && env-cmd -f src/config/$NODE_ENV.env.json --use-shell \"pnpm run db:migrate && tsx watch --inspect=0.0.0.0:9229  --trace-warnings  ./src/apps/api/start.ts\"",
     "test-out": "env-cmd -f src/config/$NODE_ENV.env.json --use-shell \"echo hello $NODE_ENV\""

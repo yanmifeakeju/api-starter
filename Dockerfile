@@ -14,6 +14,7 @@ ENTRYPOINT ["dumb-init"]
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+RUN npm install -g npm@10.1.0
 
 WORKDIR /usr/src/app
 COPY package.json pnpm-lock.* tsconfig.* ./

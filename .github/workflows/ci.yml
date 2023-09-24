@@ -1,8 +1,8 @@
 name: CI
 on: [push, pull_request]
 env:
-  - CONFIG_FILE: ${{secrets.CONFIG_FILE}}
-  - NODE_ENV: test
+  CONFIG_FILE: ${{secrets.CONFIG_FILE}}
+  NODE_ENV: test
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -2,19 +2,19 @@ import { Type } from '@sinclair/typebox'
 import { DateSchema } from '../../../shared/schema/index.js'
 
 export const UserSchema = Type.Object(
-  {
-    id: Type.Number(),
-    userId: Type.String({ format: 'uuid' }),
-    email: Type.String({ format: 'email' }),
-    username: Type.String({ minLength: 2, maxLength: 15 }),
-    password: Type.String({ minLength: 8 }),
-    phone: Type.String({
-      maxLength: 11,
-      minLength: 11,
-    }),
-    lastLogin: DateSchema,
-  },
-  { additionalProperties: false },
+	{
+		id: Type.Number(),
+		userId: Type.String({ format: 'uuid' }),
+		email: Type.String({ format: 'email' }),
+		username: Type.String({ minLength: 2, maxLength: 15 }),
+		password: Type.String({ minLength: 8 }),
+		phone: Type.String({
+			maxLength: 11,
+			minLength: 11,
+		}),
+		lastLogin: DateSchema,
+	},
+	{ additionalProperties: false },
 )
 
 export const userProfileSchema = Type.Pick(UserSchema, ['userId', 'email', 'username', 'lastLogin', 'phone'])

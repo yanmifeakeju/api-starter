@@ -6,35 +6,35 @@ import { fetchUserProfile, loginUser, registerUser } from './controllers.js'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export default async (fastify: FastifyInstance) => {
-  const server = fastify.withTypeProvider<TypeBoxTypeProvider>()
+	const server = fastify.withTypeProvider<TypeBoxTypeProvider>()
 
-  server.register(
-    async function(routePlugin) {
-      const routes: RouteOptions[] = [
-        {
-          method: 'POST',
-          url: '/',
-          schema: CreateUserSchema,
-          handler: registerUser as RouteHandler,
-        },
+	server.register(
+		async function(routePlugin) {
+			const routes: RouteOptions[] = [
+				{
+					method: 'POST',
+					url: '/',
+					schema: CreateUserSchema,
+					handler: registerUser as RouteHandler,
+				},
 
-        {
-          method: 'GET',
-          url: '/',
-          schema: GetUserSchema,
-          onRequest: [server.authenticate],
-          handler: fetchUserProfile as RouteHandlerMethod,
-        },
+				{
+					method: 'GET',
+					url: '/',
+					schema: GetUserSchema,
+					onRequest: [server.authenticate],
+					handler: fetchUserProfile as RouteHandlerMethod,
+				},
 
-        {
-          method: 'POST',
-          url: '/sign_in',
-          handler: loginUser as RouteHandlerMethod,
-          schema: SignInUserSchema,
-        },
-      ]
+				{
+					method: 'POST',
+					url: '/sign_in',
+					handler: loginUser as RouteHandlerMethod,
+					schema: SignInUserSchema,
+				},
+			]
 
-      routes.forEach((route) => routePlugin.route(route))
-    },
-  )
+			routes.forEach((route) => routePlugin.route(route))
+		},
+	)
 }

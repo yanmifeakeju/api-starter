@@ -5,16 +5,16 @@ import { app } from './index.js'
 let server: FastifyInstance
 
 beforeAll(async () => {
-  server = await app()
+	server = await app()
 })
 
 afterAll(async () => {
-  server.close()
+	server.close()
 })
 
 test('should return OK', async () => {
-  const response = await server.inject({ url: '/health-check' })
-  const data = response.json()
-  expect(data.status).toBe('OK')
-  await server.close()
+	const response = await server.inject({ url: '/health-check' })
+	const data = response.json()
+	expect(data.status).toBe('OK')
+	await server.close()
 })

@@ -7,19 +7,15 @@
     "ifStatement.bracePosition": "sameLine",
     "semiColons": "asi",
     "useBraces": "preferNone",
-    "singleBodyPosition": "sameLine"
+    "singleBodyPosition": "nextLine",
+    "useTabs": true,
+    "quoteProps": "asNeeded"
   },
   "json": {},
   "markdown": {},
   "toml": {},
   "dockerfile": {},
-  "excludes": [
-    "**/node_modules",
-    "**/*-lock.json",
-    "dist",
-    "**/.pnpm-store",
-    "./src/db/migrations/meta"
-  ],
+  "excludes": ["**/node_modules", "**/*-lock", "dist", "**/.pnpm-store"],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.86.2.wasm",
     "https://plugins.dprint.dev/json-0.17.4.wasm",

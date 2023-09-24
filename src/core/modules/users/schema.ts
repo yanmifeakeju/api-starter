@@ -19,7 +19,7 @@ export const UserSchema = Type.Object(
 
 export const userProfileSchema = Type.Pick(UserSchema, ['userId', 'email', 'username', 'lastLogin', 'phone'])
 export const createUserProfileSchema = Type.Pick(UserSchema, ['email', 'password', 'username', 'phone'])
-export const findUserProfileSchema = Type.Pick(Type.Partial(UserSchema), ['email', 'username'])
+export const findUserProfileSchema = Type.Pick(Type.Partial(UserSchema), ['email', 'username', 'phone'])
 export const findUserCredentialsSchema = Type.Pick(UserSchema, ['email', 'password'])
 export const findUniqueUserSchema = Type.Pick(Type.Partial(UserSchema), ['username', 'email', 'userId'])
 export const userAuthSchema = Type.Pick(UserSchema, ['email', 'password'])

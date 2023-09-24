@@ -6,8 +6,8 @@ export const registerUser = async (
 ) => {
 	const { email, password, username, phone } = UserValidator.validateCreateUserData(data)
 
-	const existingUser = await UserModule.find({ email, username })
-	if (existingUser) throw new AppError('DUPLICATE_ENTRY', 'Email or username already taken.')
+	const existingUser = await UserModule.find({ email, username, phone })
+	if (existingUser) throw new AppError('DUPLICATE_ENTRY', 'Email, username, or phone is already taken.')
 
 	return UserModule.create({ email, password, username, phone })
 }

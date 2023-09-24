@@ -42,11 +42,15 @@ export const fetchUser = async ({
 	username,
 	phone,
 }: Partial<Omit<UserProfile, 'lastLogin' | 'userId'>>, db: Queryable): Promise<UserProfile | null> => {
-	const user = await users(db).find(or({
-		...(email && { email }),
-		...(username && { username }),
-		...(phone && { phone }),
-	})).andWhere({ deleted_at: null }).select('email', 'username', 'user_id', 'last_login', 'phone').one()
+	const user = await users(db).find(
+		or(email ? { email } : {}, username ? { username } : {}, phone ? { phone } : {}),
+	).select(
+		'email',
+		'username',
+		'user_id',
+		'last_login',
+		'phone',
+	).one()
 
 	return user && {
 		email: user.email,

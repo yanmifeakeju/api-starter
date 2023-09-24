@@ -23,7 +23,7 @@ export const create = wrapper(
 )
 
 export const find = wrapper(
-	async (input: Partial<Pick<User, 'email' | 'username'>>): Promise<UserProfile | null> => {
+	async (input: Partial<Pick<User, 'email' | 'username' | 'phone'>>): Promise<UserProfile | null> => {
 		const data = validateFindUserProfileData(input)
 		return fetchUser(data, db)
 	},

@@ -1,6 +1,6 @@
 import Chance from 'chance'
 import { beforeEach, describe, it, vi } from 'vitest'
-import { create } from '../../users'
+import { create } from '../../users/index.js'
 
 const chance = new Chance()
 

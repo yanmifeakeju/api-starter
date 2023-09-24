@@ -1,12 +1,12 @@
 import createConnectionPool, { type ConnectionPool, sql } from '@databases/pg'
 import tables from '@databases/pg-typed'
 import { createRequire } from 'module'
-import { env } from '../../config/env'
-import type DatabaseSchema from './schema'
+import { env } from '../../config/env.js'
+import type DatabaseSchema from './schema/index.js'
 
 const noLogEnvs = ['test', 'production']
 
-const db: ConnectionPool = createConnectionPool({
+const db: ConnectionPool = createConnectionPool.default({
   connectionString: env.DATABASE_URL,
   bigIntMode: 'bigint',
   onQueryStart: (_query, { text, values }) => {
@@ -37,7 +37,7 @@ const db: ConnectionPool = createConnectionPool({
 
 const require = createRequire(import.meta.url)
 
-const { users, user_credentials } = tables<DatabaseSchema>({
+const { users, user_credentials } = tables.default<DatabaseSchema.default>({
   databaseSchema: require('./schema/schema.json'),
 })
 

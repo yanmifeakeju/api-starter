@@ -4,7 +4,7 @@ import { AppError } from '../shared/error/AppError.js'
 import { generateSchemaErrorMessage } from './error-message.js'
 
 export const ajv = addFormats
-  .default(new Ajv({}), [
+  .default(new Ajv.default({}), [
     'date-time',
     'time',
     'date',

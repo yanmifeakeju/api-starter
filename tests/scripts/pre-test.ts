@@ -1,4 +1,4 @@
-import dockerConsole, { Containers } from '../helpers/docker'
+import dockerConsole, { Containers } from '../helpers/docker.js'
 
 export default async function pretest() {
   const docker = dockerConsole()

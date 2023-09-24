@@ -1,9 +1,9 @@
 import { type Queryable, sql, type Transaction } from '@databases/pg'
 import { anyOf, greaterThan, or } from '@databases/pg-typed'
-import { type OnlyOneProperty } from '../../../@types/util-types'
-import { user_credentials, users } from '../../../databases/postgres'
-import { type UserCredentials } from '../../../databases/postgres/schema'
-import { type User, type UserProfile } from './types'
+import { type OnlyOneProperty } from '../../../@types/util-types/index.js'
+import { user_credentials, users } from '../../../databases/postgres/index.js'
+import { type UserCredentials } from '../../../databases/postgres/schema/index.js'
+import { type User, type UserProfile } from './types.js'
 
 export const saveUser = async ({
   email,
@@ -12,7 +12,7 @@ export const saveUser = async ({
   phone,
 }: Pick<User, 'email' | 'username' | 'password' | 'phone'>, db: Queryable): Promise<UserProfile> => {
   const user = await db.tx(async (connection: Transaction) => {
-    const user = await users(connection).insert({
+    const [user] = await users(connection).insert({
       email,
       username,
       phone,
@@ -21,10 +21,10 @@ export const saveUser = async ({
     await user_credentials(connection).insert({
       credential_type: 'password',
       credential_value: password,
-      user_id: user[0].id,
+      user_id: user.id,
     })
 
-    return user[0]
+    return user
   })
 
   return {

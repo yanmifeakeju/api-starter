@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "ES2022",
+    "module": "NodeNext",
     "target": "ES2022",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "declaration": false,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -21,5 +21,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src/**/*", "tests/**/*"]
+
+  "include": [
+    "src/**/*",
+    "src/config/*.json",
+    "tests/**/*",
+    "src/databases/postgres/schema/schema.json"
+  ]
 }

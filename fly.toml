@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for aged-sea-1086 on 2023-09-24T19:47:48+01:00
+# fly.toml app configuration file generated for aged-sea-1086 on 2023-09-25T12:27:31+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,8 +7,10 @@ app = "aged-sea-1086"
 primary_region = "lhr"
 
 [build]
-build-target = "prod"
-release_command = "pnpm run db:migrate"
+  build-target = "prod"
+
+[deploy]
+  release_command = "pnpm run db:migrate"
 
 
 [http_service]
@@ -18,3 +20,4 @@ release_command = "pnpm run db:migrate"
   auto_start_machines = true
   min_machines_running = 0
   processes = ["app"]
+

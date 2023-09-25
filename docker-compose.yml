@@ -1,4 +1,4 @@
-version: "2.4"
+version: '2.4'
 
 services:
   api:
@@ -12,8 +12,9 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+
     ports:
-      - "${SEVER_PORT:-8080}:8080"
+      - '${SEVER_PORT:-8080}:8080'
       - 9229:9229
     depends_on:
       - postgres
@@ -22,11 +23,11 @@ services:
   postgres:
     image: postgres:15.4
     ports:
-      - "3306:5432"
+      - '3306:5432'
     volumes:
       - api-db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 1m30s
       timeout: 30s
       retries: 5
@@ -41,7 +42,7 @@ services:
     volumes:
       - api-redis:/data
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
       interval: 1m30s
       timeout: 30s
       retries: 5

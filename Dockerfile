@@ -31,13 +31,13 @@ FROM base AS build
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-RUN echo "${X:-"{}"}" > ./dist/config/$NODE_ENV.env.json
 RUN pnpm run build
 
 FROM base AS dev
 ENV NODE_ENV=development
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-CMD ["pnpm", "start:api:dev"]
+CMD ["pnpm", "start:api"]
 
 FROM base AS prod
 ENV NODE_ENV=production
@@ -48,4 +48,4 @@ COPY --from=build /usr/src/app/node_modules/@databases/pg-migrations ./node_modu
 COPY --from=build /usr/src/app/dist ./dist
 RUN chown -R node /usr/src/app
 USER node
-CMD ["pnpm", "start:api"]
+CMD ["node", "./dist/apps/api/start.js"]

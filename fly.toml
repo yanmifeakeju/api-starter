@@ -7,6 +7,9 @@ app = "aged-sea-1086"
 primary_region = "lhr"
 
 [build]
+build-target = "prod"
+release_command = "pnpm run db:migrate"
+
 
 [http_service]
   internal_port = 8080

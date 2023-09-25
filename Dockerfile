@@ -31,7 +31,7 @@ FROM base AS build
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-RUN touch ./src/config/$NODE_ENV.env.json
+RUN echo "${X:-"{}"}" > ./dist/config/$NODE_ENV.env.json
 RUN pnpm run build
 
 FROM base AS dev
@@ -42,11 +42,10 @@ CMD ["pnpm", "start:api:dev"]
 FROM base AS prod
 ENV NODE_ENV=production
 EXPOSE 8080
+COPY . .
 COPY --from=production-deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/node_modules/@databases/pg-migrations ./node_modules/@databases/pg-migrations
 COPY --from=build /usr/src/app/dist ./dist
-COPY . .
-RUN echo "${X:-"{}"}" > ./dist/config/$NODE_ENV.env.json
 RUN chown -R node /usr/src/app
 USER node
 CMD ["pnpm", "start:api"]

@@ -53,6 +53,9 @@ dependencies:
   fastify:
     specifier: ^4.23.2
     version: 4.23.2
+  fastify-metrics:
+    specifier: ^10.3.2
+    version: 10.3.2(fastify@4.23.2)
   fastify-plugin:
     specifier: ^4.5.1
     version: 4.5.1
@@ -1318,6 +1321,10 @@ packages:
     resolution: {integrity: sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==}
     dev: false
 
+  /bintrees@1.0.2:
+    resolution: {integrity: sha512-VOMgTMwjAaUG580SXn3LacVgjurrbMme7ZZNYGSSV7mmtY6QQRh0Eg3pwIcntQ77DErK1L0NxkbetjcoXzVwKw==}
+    dev: false
+
   /bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
     dependencies:
@@ -2115,6 +2122,16 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       reusify: 1.0.4
+    dev: false
+
+  /fastify-metrics@10.3.2(fastify@4.23.2):
+    resolution: {integrity: sha512-02SEIGH02zfguqRMho0LB8L7YVAj5cIgWM0iqZslIErqaUWc1iHVAOC+YXYG3S2DZU6VHdFaMyuxjEOCQHAETA==}
+    peerDependencies:
+      fastify: '>=4'
+    dependencies:
+      fastify: 4.23.2
+      fastify-plugin: 4.5.1
+      prom-client: 14.2.0
     dev: false
 
   /fastify-plugin@4.5.1:
@@ -3457,6 +3474,13 @@ packages:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
     engines: {node: '>= 0.6.0'}
 
+  /prom-client@14.2.0:
+    resolution: {integrity: sha512-sF308EhTenb/pDRPakm+WgiN+VdM/T1RaHj1x+MvAuT8UiQP8JmOEbxVqtkbfR4LrvOg5n7ic01kRBDGXjYikA==}
+    engines: {node: '>=10'}
+    dependencies:
+      tdigest: 0.1.2
+    dev: false
+
   /proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
     dev: false
@@ -3876,6 +3900,12 @@ packages:
       inherits: 2.0.4
       readable-stream: 3.6.2
     dev: true
+
+  /tdigest@0.1.2:
+    resolution: {integrity: sha512-+G0LLgjjo9BZX2MfdvPfH+MKLCrxlXSYec5DaPYP1fe6Iyhf0/fSmJ0bFiZ1F8BT6cGXl2LpltQptzjXKWEkKA==}
+    dependencies:
+      bintrees: 1.0.2
+    dev: false
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}

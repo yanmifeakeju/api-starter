@@ -17,9 +17,9 @@
     "test": "dotenv -e .env.test -- vitest run",
     "posttest": "dotenv -e .env.test -- tsx tests/scripts/post-test.ts",
     "db:schema": "npx @databases/pg-schema-cli --directory src/databases/postgres/schema",
-    "db:migrate": "npx pg-migrations apply --directory src/databases/postgres/migrations",
+    "db:migrate": "npx @databases/pg-migrations apply --directory src/databases/postgres/migrations",
     "start:api": "dotenv pnpm run db:migrate && dotenv tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts",
-    "start:api:local": "dotenv -e env.local -- pnpm run db:migrate && dotenv -e .env.local -- tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts"
+    "start:api:local": "dotenv -e .env.local -- pnpm run db:migrate && dotenv -e .env.local -- tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +41,7 @@
     "env-cmd": "^10.1.0",
     "env-schema": "^5.2.0",
     "fastify": "^4.23.2",
+    "fastify-metrics": "^10.3.2",
     "fastify-plugin": "^4.5.1",
     "ioredis": "^5.3.2",
     "mongodb": "^6.1.0",

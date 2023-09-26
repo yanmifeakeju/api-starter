@@ -1,12 +1,13 @@
 name: CI
-on: [push, pull_request]
-env:
-  NODE_ENV: test
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  RESEND_API_KEY: ${{secrets.RESEND_API_KEY}}
-  AUTH_JWT_SECRET: ${{secrets.AUTH_JWT_SECRET}}
-  SERVER_PORT: ${{vars.SERVER_PORT}}
-  JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}
+
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches-ignore:
+      - live
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -29,3 +30,10 @@ jobs:
         run: |
           ls -l
           pnpm test
+env:
+  NODE_ENV: test
+  DATABASE_URL: ${{secrets.DATABASE_URL}}
+  RESEND_API_KEY: ${{secrets.RESEND_API_KEY}}
+  AUTH_JWT_SECRET: ${{secrets.AUTH_JWT_SECRET}}
+  SERVER_PORT: ${{vars.SERVER_PORT}}
+  JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}

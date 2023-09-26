@@ -130,6 +130,10 @@ dist
 .pnp.*
 .pnpm*
 **/config/**.json
-**/databases/postgres/schema
+# Exclude TypeScript files
+**/databases/postgres/schema/*
+
+# Allow package.json files
+!**/databases/postgres/schema/package.json
 
 .env.test

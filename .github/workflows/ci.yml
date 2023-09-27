@@ -38,3 +38,4 @@ env:
   SERVER_PORT: ${{vars.SERVER_PORT}}
   JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}
   REDIS_URL: ${{secrets.REDIS_URL}}
+  MONGO_URI: ${{secrets.MONGO_URI}}

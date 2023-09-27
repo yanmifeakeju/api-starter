@@ -61,3 +61,4 @@ env:
   JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}
   FLY_API_TOKEN: ${{secrets.FLY_API_TOKEN}}
   REDIS_URL: ${{secrets.REDIS_URL}}
+  MONGO_URI: ${{secrets.MONGO_URI}}

@@ -13,7 +13,7 @@ const Containers: Record<keyof ContainerOptionsMap, Dockerode.ContainerCreateOpt
 
 		HostConfig: {
 			PortBindings: {
-				'27017/tcp': [{ HostIp: '0.0.0.0', HostPort: '27017' }],
+				'27017/tcp': [{ HostIp: '0.0.0.0', HostPort: '27018' }, { HostIp: '::', HostPort: '27018' }],
 			},
 			AutoRemove: true,
 		},
@@ -75,13 +75,18 @@ function dockerConsole() {
 	async function pullImage(container: Dockerode.ContainerCreateOptions): Promise<void> {
 		const pullStream = await docker.pull(container.Image!)
 		return new Promise((resolve, reject) => {
-			docker.modem.followProgress(pullStream, onFinish)
+			docker.modem.followProgress(pullStream, onFinish, onProgress)
 
 			function onFinish(err: unknown) {
 				if (err) reject(err)
 				else resolve()
 			}
 		})
+
+		function onProgress(event: unknown) {
+			console.log('Pulling')
+			console.log(event)
+		}
 	}
 }
 

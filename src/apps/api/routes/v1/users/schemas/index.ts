@@ -1,6 +1,6 @@
 import { Type } from '@fastify/type-provider-typebox'
-import { UsersSchema } from '../../../../../core/index.js'
-import { BaseResponseSchema } from '../../../schemas/index.js'
+import { UsersSchema } from '../../../../../../core/index.js'
+import { BaseResponseSchema } from '../../../../schemas/index.js'
 
 export const CreateUserSchema = {
 	body: UsersSchema.createUserProfileSchema,

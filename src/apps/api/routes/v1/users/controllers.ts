@@ -1,7 +1,7 @@
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { type FastifyInstance } from 'fastify'
 import { type FastifyReplyInferred, type FastifyRequestInferred } from '../../../../../@types/fastify/index.js'
-import { type CreateUserSchema, type GetUserSchema, type SignInUserSchema } from '../schemas/index.js'
+import { type CreateUserSchema, type GetUserSchema, type SignInUserSchema } from './schemas/index.js'
 
 export const registerUser = async function(
 	this: FastifyInstance,

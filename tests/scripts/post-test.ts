@@ -1,6 +1,6 @@
 import dockerConsole, { Containers } from '../helpers/docker.js'
 
-export default async function pretest() {
+async function pretest() {
 	try {
 		const docker = dockerConsole()
 		await Promise.all(

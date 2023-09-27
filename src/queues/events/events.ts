@@ -26,7 +26,8 @@ export async function addEventToQueue<T extends keyof EventDataProps>(
 			}`,
 		)
 
-		throw error
+		// throw error
+		// Usually I don't throw error and I want an external tool to send alerts for this.
 	}
 }
 

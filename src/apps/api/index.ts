@@ -64,5 +64,6 @@ export const app = async (): Promise<FastifyInstance> => {
 	fastify.get('/health-check', async () => ({ status: 'OK' }))
 
 	await fastify.ready()
+	console.log(fastify.printRoutes())
 	return fastify
 }

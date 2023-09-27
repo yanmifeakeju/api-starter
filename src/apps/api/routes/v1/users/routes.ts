@@ -1,7 +1,7 @@
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { type FastifyInstance, type RouteHandler, type RouteHandlerMethod, type RouteOptions } from 'fastify'
-import { CreateUserSchema, GetUserSchema, SignInUserSchema } from '../schemas/index.js'
 import { fetchUserProfile, loginUser, registerUser } from './controllers.js'
+import { CreateUserSchema, GetUserSchema, SignInUserSchema } from './schemas/index.js'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

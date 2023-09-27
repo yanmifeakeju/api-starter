@@ -1,17 +1,21 @@
-import { type Processor, Worker } from 'bullmq'
-import { Queue } from 'bullmq'
+import { type Job, Queue, Worker } from 'bullmq'
+import { connection } from './connection.js'
 
-import { Redis } from 'ioredis'
-
-const redis = new Redis({ maxRetriesPerRequest: null })
-
-export const createJobHandler = (jobName: string) => {
-	return new Queue(jobName, { connection: redis })
+export const createQueue = <T>(queueName: string) => {
+	return new Queue<T>(queueName, { connection })
 }
 
-export const createWorkerHandler = (jobName: string, handler: Processor) => {
-	const worker = new Worker(jobName, handler, { connection: redis })
+type Handler<T, U> = (job: Job<T, U>) => Promise<U>
+
+export const createWorker = <T, U>(queueName: string, handler: Handler<T, U>) => {
+	const worker = new Worker(queueName, handler, {
+		connection,
+		removeOnComplete: { age: 3600 * 24, count: 5000 },
+		removeOnFail: { age: 3600 * 24 * 3, count: 10000 },
+	})
 
 	worker.on('completed', (job) => console.log(`${job.id} has completed`))
-	worker.on('failed', (job) => console.log(`${job?.id} has failed`))
+	worker.on('failed', (job) => console.log(`${job?.name} has failed`))
+
+	return worker
 }

@@ -12,6 +12,7 @@ const ConfigSchema = Type.Object({
 	AUTH_JWT_SECRET: Type.String({ minLength: 10 }),
 	JWT_EXPIRES_IN: Type.Number(),
 	RESEND_API_KEY: Type.String(),
+	REDIS_URL: Type.String({ format: 'uri' }),
 })
 
 type Config = Static<typeof ConfigSchema>

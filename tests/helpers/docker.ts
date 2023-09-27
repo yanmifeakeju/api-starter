@@ -2,6 +2,7 @@ import { default as Docker, type default as Dockerode } from 'dockerode'
 type ContainerOptionsMap = {
 	mongo: Dockerode.ContainerCreateOptions
 	postgres: Dockerode.ContainerCreateOptions
+	redis: Dockerode.ContainerCreateOptions
 }
 
 const Containers: Record<keyof ContainerOptionsMap, Dockerode.ContainerCreateOptions> = {
@@ -26,6 +27,18 @@ const Containers: Record<keyof ContainerOptionsMap, Dockerode.ContainerCreateOpt
 		HostConfig: {
 			PortBindings: {
 				'5432/tcp': [{ HostIp: '0.0.0.0', HostPort: '5433' }, { HostIp: '::', HostPort: '5433' }],
+			},
+			AutoRemove: true,
+		},
+	},
+
+	redis: {
+		name: 'test_redis',
+		Image: 'redis',
+		Tty: false,
+		HostConfig: {
+			PortBindings: {
+				'6379/tcp': [{ HostIp: '0.0.0.0', HostPort: '6380' }, { HostIp: '::', HostPort: '6380' }],
 			},
 			AutoRemove: true,
 		},

@@ -62,3 +62,4 @@ env:
   FLY_API_TOKEN: ${{secrets.FLY_API_TOKEN}}
   REDIS_URL: ${{secrets.REDIS_URL}}
   MONGO_URI: ${{secrets.MONGO_URI}}
+  MONGO_STORE: ${{secrets.MONGO_STORE}}

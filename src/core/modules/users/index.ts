@@ -1,5 +1,5 @@
 import { type OnlyOneProperty } from '../../../@types/util-types/index.js'
-import db from '../../../databases/postgres/index.js'
+import db from '../../../infrastructure/databases/postgres/index.js'
 import { AppError } from '../../../shared/error/AppError.js'
 import { moduleAsyncWrapper } from '../../../utils/module-wrapper.js'
 import { hashPassword, verifyPassword } from '../../../utils/password.js'

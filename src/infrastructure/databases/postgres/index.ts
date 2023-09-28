@@ -1,7 +1,7 @@
 import createConnectionPool, { type ConnectionPool, sql } from '@databases/pg'
 import tables from '@databases/pg-typed'
 import { createRequire } from 'module'
-import { env } from '../../config/env.js'
+import { env } from '../../../config/env/env.js'
 import type DatabaseSchema from './schema/index.js'
 
 const noLogEnvs = ['test', 'production']

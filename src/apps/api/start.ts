@@ -1,5 +1,5 @@
-import { env } from '../../config/env.js'
-import db, { sql } from '../../databases/postgres/index.js'
+import { env } from '../../config/env/env.js'
+import db, { sql } from '../../infrastructure/databases/postgres/index.js'
 import { app } from './index.js'
 
 await db.query(sql`SELECT 1+ 1`)

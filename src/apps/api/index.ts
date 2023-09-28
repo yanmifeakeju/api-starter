@@ -3,7 +3,7 @@ import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import Fastify, { type FastifyInstance } from 'fastify'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { env } from '../../config/env.js'
+import { env } from '../../config/env/env.js'
 import { AppError } from '../../shared/error/AppError.js'
 import { generateSchemaErrorMessage } from '../../utils/error-message.js'
 import { mapAppErrorToApiError } from '../../utils/errors.js'
@@ -64,6 +64,5 @@ export const app = async (): Promise<FastifyInstance> => {
 	fastify.get('/health-check', async () => ({ status: 'OK' }))
 
 	await fastify.ready()
-	console.log(fastify.printRoutes())
 	return fastify
 }

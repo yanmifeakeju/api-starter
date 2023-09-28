@@ -16,8 +16,8 @@
     "pretest": "dotenv -e .env.test -- pnpm run pretest-script && dotenv -e .env.test -- pnpm run db:migrate && dotenv -e .env.test -- pnpm run db:schema",
     "test": "dotenv -e .env.test -- vitest run",
     "posttest": "dotenv -e .env.test -- tsx tests/scripts/post-test.ts",
-    "db:schema": "npx @databases/pg-schema-cli --directory src/databases/postgres/schema",
-    "db:migrate": "npx @databases/pg-migrations apply --directory src/databases/postgres/migrations",
+    "db:schema": "npx @databases/pg-schema-cli --directory src/infrastructure/databases/postgres/schema",
+    "db:migrate": "npx @databases/pg-migrations apply --directory src/infrastructure/databases/postgres/migrations",
     "start:api": "dotenv pnpm run db:migrate && dotenv tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts",
     "start:api:local": "dotenv -e .env.local -- pnpm run db:migrate && dotenv -e .env.local -- tsx watch --inspect=0.0.0.0:9229 ./src/apps/api/start.ts"
   },

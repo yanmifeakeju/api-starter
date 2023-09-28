@@ -1,5 +1,5 @@
-import { createQueue, createWorker } from '../../libs/bullmq/index.js'
 import { AppError } from '../../shared/error/AppError.js'
+import { createQueue, createWorker } from '../bullmq/index.js'
 import { type EventDataProps, type EventHandlers, type EventMap } from './types.js'
 
 export const eventQueueName = 'events'

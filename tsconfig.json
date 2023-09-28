@@ -26,6 +26,7 @@
     "src/**/*",
     "src/config/*.json",
     "tests/**/*",
-    "src/databases/postgres/schema/schema.json"
+    "src/infrastructure/databases/postgres/schema/schema.json",
+    "src/infrastructure/databases/postgres/migrations/*.sql"
   ]
 }

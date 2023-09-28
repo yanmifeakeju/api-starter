@@ -1,6 +1,6 @@
 import { type FastifyInstance } from 'fastify'
 import { afterAll, beforeAll, expect, test } from 'vitest'
-import { app } from './index.js'
+import { app } from '../index.js'
 
 let server: FastifyInstance
 

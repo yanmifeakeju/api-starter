@@ -1,4 +1,4 @@
-import { env } from '../config/env.js'
+import { env } from '../config/env/env.js'
 import { type AppError } from '../shared/error/AppError.js'
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {

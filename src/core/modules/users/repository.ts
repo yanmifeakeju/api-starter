@@ -1,8 +1,8 @@
 import { type Queryable, sql, type Transaction } from '@databases/pg'
 import { anyOf, greaterThan, or } from '@databases/pg-typed'
 import { type OnlyOneProperty } from '../../../@types/util-types/index.js'
-import { user_credentials, users } from '../../../databases/postgres/index.js'
-import { type UserCredentials } from '../../../databases/postgres/schema/index.js'
+import { user_credentials, users } from '../../../infrastructure/databases/postgres/index.js'
+import { type UserCredentials } from '../../../infrastructure/databases/postgres/schema/index.js'
 import { type User, type UserProfile } from './types.js'
 
 export const saveUser = async ({

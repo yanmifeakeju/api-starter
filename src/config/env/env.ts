@@ -1,7 +1,7 @@
 import { type Static, Type } from '@sinclair/typebox'
 import envSchema from 'env-schema'
 import { createRequire } from 'node:module'
-import { StringEnum } from '../shared/schema/index.js'
+import { StringEnum } from '../../shared/schema/index.js'
 
 const require = createRequire(import.meta.url)
 
@@ -14,6 +14,7 @@ const ConfigSchema = Type.Object({
 	RESEND_API_KEY: Type.String(),
 	REDIS_URL: Type.String({ format: 'uri' }),
 	MONGO_URI: Type.String(),
+	MONGO_STORE: Type.String(),
 })
 
 type Config = Static<typeof ConfigSchema>

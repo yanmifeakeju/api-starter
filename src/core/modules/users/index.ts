@@ -1,6 +1,6 @@
 import { type OnlyOneProperty } from '../../../@types/util-types/index.js'
 import db from '../../../infrastructure/databases/postgres/index.js'
-import { AppError } from '../../../shared/error/AppError.js'
+import { AppError } from '../../../utils/error/AppError.js'
 import { moduleAsyncWrapper } from '../../../utils/module-wrapper.js'
 import { hashPassword, verifyPassword } from '../../../utils/password.js'
 import { fetchUniqueUser, fetchUser, fetchUserAuthCredentials, saveUser, updateLastLogin } from './repository.js'

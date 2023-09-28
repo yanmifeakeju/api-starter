@@ -1,4 +1,4 @@
-import { AppError } from '../../shared/error/AppError.js'
+import { AppError } from '../../utils/error/AppError.js'
 import { createQueue, createWorker } from '../bullmq/index.js'
 import { type EventDataProps, type EventHandlers, type EventMap } from './types.js'
 

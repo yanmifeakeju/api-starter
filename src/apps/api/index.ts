@@ -4,9 +4,9 @@ import Fastify, { type FastifyInstance } from 'fastify'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { env } from '../../config/env/env.js'
-import { AppError } from '../../shared/error/AppError.js'
 import { generateSchemaErrorMessage } from '../../utils/error-message.js'
-import { mapAppErrorToApiError } from '../../utils/errors.js'
+import { AppError } from '../../utils/error/AppError.js'
+import { mapAppErrorToApiError } from '../../utils/error/errors.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

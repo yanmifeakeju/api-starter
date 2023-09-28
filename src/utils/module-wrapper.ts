@@ -1,4 +1,4 @@
-import { handleAppError } from './errors.js'
+import { handleAppError } from './error/errors.js'
 
 // Wrapper for the core modules
 // I want to know every error that happens inside the code.

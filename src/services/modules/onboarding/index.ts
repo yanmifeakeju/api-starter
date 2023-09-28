@@ -1,6 +1,6 @@
 import { UserModule, type UserTypes, UserValidator } from '../../../core/index.js'
 import { addEventToQueue } from '../../../queues/events/events.js'
-import { AppError } from '../../../shared/error/AppError.js'
+import { AppError } from '../../../utils/error/AppError.js'
 
 export const registerUser = async (
 	data: Omit<UserTypes.UserProfile & { password: string }, 'lastLogin' | 'userId'>,

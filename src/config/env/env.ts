@@ -15,6 +15,7 @@ const ConfigSchema = Type.Object({
 	REDIS_URL: Type.String({ format: 'uri' }),
 	MONGO_URI: Type.String(),
 	MONGO_STORE: Type.String(),
+	SEVER_LOG_LEVEL: Type.Optional(Type.String(StringEnum(['info', 'error', 'debug']))),
 })
 
 type Config = Static<typeof ConfigSchema>

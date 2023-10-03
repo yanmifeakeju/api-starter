@@ -1,3 +1,4 @@
+import { logger } from '../../shared/logger/pino.js'
 import { AppError } from '../../utils/error/AppError.js'
 import { createQueue, createWorker } from '../bullmq/index.js'
 import { type EventDataProps, type EventHandlers, type EventMap } from './types.js'
@@ -20,7 +21,7 @@ export async function addEventToQueue<T extends keyof EventDataProps>(
 		await queue.add(eventType, { ...eventData, type: eventType })
 	} catch (error) {
 		// Implement a log aggregator for recording failed jobs.
-		console.error(
+		logger.error(
 			`${eventData.timestamp}: Adding ${eventType} for ${eventData.userId} to queue failed || ${
 				(error as Error).message || JSON.stringify(error)
 			}`,
@@ -35,11 +36,11 @@ type EventTypes = keyof EventDataProps
 
 const eventHandlers: EventHandlers = {
 	USER_REGISTERED: async ({ type, timestamp, userId, data }) => {
-		console.log('Processing USER_REGISTERED event', type, timestamp, userId, data)
+		logger.info('Processing USER_REGISTERED event', type, timestamp, userId, data)
 	},
 
 	USER_LOGGED_IN: async ({ type, timestamp, userId, data }) => {
-		console.log('Processing USER_LOGGED_IN event', type, timestamp, userId, data)
+		logger.info('Processing USER_LOGGED_IN event ', type, timestamp, userId, data)
 	},
 }
 
@@ -51,6 +52,6 @@ async function processEvent<T extends EventTypes>(eventType: T, data: EventMap[T
 
 export const processEventQueue = () =>
 	createWorker<EventMap[EventTypes] & { type: EventTypes }, void>(eventQueueName, async (job) => {
-		console.log(`Processing ${job.data.type}: [TIMESTAMP ${job.data.timestamp}] [USER_ID: ${job.data.userId}]`)
+		logger.info(`Processing ${job.data.type}: [TIMESTAMP ${job.data.timestamp}] [USER_ID: ${job.data.userId}]`)
 		await processEvent(job.data.type, job.data)
 	})

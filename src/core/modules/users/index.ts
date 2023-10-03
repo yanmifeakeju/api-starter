@@ -45,10 +45,10 @@ export const findWithCredentials = wrapper(
 		const data = validateFindUserCredentialsData(input)
 		const result = await fetchUserAuthCredentials({ email: data.email, credentialType: 'password' }, db)
 
-		if (!result) throw new AppError('ILLEGAL_ARGUMENT', 'Invalid credentials.')
+		if (!result) throw new AppError('INVALID_ARGUMENT', 'Invalid credentials.')
 
 		const isUserCreds = await verifyPassword(data.password, result.credentialValue)
-		if (!isUserCreds) throw new AppError('ILLEGAL_ARGUMENT', 'Invalid credentials.')
+		if (!isUserCreds) throw new AppError('INVALID_ARGUMENT', 'Invalid credentials.')
 
 		return result
 	},

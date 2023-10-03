@@ -1,10 +1,13 @@
 import { UserModule, type UserTypes } from '../../../core/index.js'
+import { addEventToQueue } from '../../../queues/events/events.js'
 
 export const loginUser = async (data: Pick<UserTypes.User, 'email' | 'password'>) => {
 	const user = await UserModule.findWithCredentials(data)
 
 	const lastLogin = new Date()
 	await UserModule.updateLastLoginTime(user, lastLogin)
+
+	addEventToQueue('USER_LOGGED_IN', { userId: user.userId, timestamp: new Date(), data: { lastLogin } })
 
 	return { ...user, lastLogin }
 }

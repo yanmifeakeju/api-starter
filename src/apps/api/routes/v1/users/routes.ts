@@ -3,8 +3,6 @@ import { type FastifyInstance, type RouteHandler, type RouteHandlerMethod, type 
 import { fetchUserProfile, loginUser, registerUser } from './controllers.js'
 import { CreateUserSchema, GetUserSchema, SignInUserSchema } from './schemas/index.js'
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 export default async (fastify: FastifyInstance) => {
 	const server = fastify.withTypeProvider<TypeBoxTypeProvider>()
 

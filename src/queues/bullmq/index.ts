@@ -1,4 +1,5 @@
 import { type Job, Queue, Worker } from 'bullmq'
+import { logger } from '../../shared/logger/pino.js'
 import { connection } from './connection.js'
 
 export const createQueue = <T>(queueName: string) => {
@@ -14,8 +15,8 @@ export const createWorker = <T, U>(queueName: string, handler: Handler<T, U>) =>
 		removeOnFail: { age: 3600 * 24 * 3, count: 10000 },
 	})
 
-	worker.on('completed', (job) => console.log(`${job.id} has completed`))
-	worker.on('failed', (job) => console.log(`${job?.name} has failed`))
+	worker.on('completed', (job) => logger.info(`${job.id} has completed`))
+	worker.on('failed', (job) => logger.info(`${job?.name} has failed`))
 
 	return worker
 }

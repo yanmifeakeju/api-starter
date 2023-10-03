@@ -3,47 +3,14 @@ import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import Fastify, { type FastifyInstance } from 'fastify'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { env } from '../../config/env/env.js'
-import { generateSchemaErrorMessage } from '../../utils/error-message.js'
-import { AppError } from '../../utils/error/AppError.js'
-import { mapAppErrorToApiError } from '../../utils/error/errors.js'
+import serverOptions from './configs/server-options.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const logger = env.NODE_ENV !== 'production'
-	? { level: 'debug', transport: { target: 'pino-pretty' } }
-	: { level: 'info' }
+const fastify = Fastify(serverOptions).withTypeProvider<TypeBoxTypeProvider>()
 
 export const app = async (): Promise<FastifyInstance> => {
-	const fastify = Fastify({
-		schemaErrorFormatter: function(errors, _httpPart) {
-			const error = generateSchemaErrorMessage(errors)
-			return new Error(error)
-		},
-		ignoreTrailingSlash: true,
-		logger,
-	}).withTypeProvider<TypeBoxTypeProvider>()
-
-	fastify.setErrorHandler((error, request, reply) => {
-		request.log.error(error)
-
-		const err = {
-			statusCode: error.statusCode,
-			error: error.message,
-		}
-
-		if (error instanceof AppError) {
-			const appErrorToApiError = mapAppErrorToApiError(error)
-			err.statusCode = appErrorToApiError.statusCode
-			err.error = appErrorToApiError.message
-		}
-
-		return reply
-			.status(err.statusCode || 500)
-			.send({ success: false, error: err.statusCode ? err.error : 'Oops. Something went wrong.' })
-	})
-
 	// Autoload plugins from plugins folder
 	fastify.register(AutoLoad, {
 		dir: path.join(__dirname, 'plugins'),

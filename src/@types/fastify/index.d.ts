@@ -16,7 +16,8 @@ export type FastifyRequestTypebox<TSchema extends FastifySchema> = FastifyReques
 	RawServerDefault,
 	RawRequestDefaultExpression<RawServerDefault>,
 	TSchema,
-	TypeBoxTypeProvider
+	TypeBoxTypeProvider,
+	MyContextConfig
 >
 
 export type FastifyReplyTypebox<TSchema extends FastifySchema> = FastifyReply<
@@ -46,3 +47,16 @@ export type FastifyReplyInferred<
 	Schema,
 	Provider
 >
+
+declare module 'fastify' {
+	interface FastifyContextConfig {
+		logBody?: boolean
+	}
+
+	interface FastifyRequest {
+		user?: {
+			userId: string
+			lastLogin: Date
+		}
+	}
+}

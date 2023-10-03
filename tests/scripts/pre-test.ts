@@ -8,7 +8,8 @@ async function pretest() {
 			await docker.startContainer(Containers[containerName])
 		}),
 	)
-	setTimeout(() => console.log('CHILL'), 5000) // wait a five seconds before starting test
+
+	setTimeout(() => console.log('DELAY...'), 5000) // wait a five seconds before starting test
 }
 
 await pretest()

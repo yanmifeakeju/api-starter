@@ -84,8 +84,7 @@ function dockerConsole() {
 		})
 
 		function onProgress(event: unknown) {
-			console.log('Pulling')
-			console.log(event)
+			console.info(event)
 		}
 	}
 }

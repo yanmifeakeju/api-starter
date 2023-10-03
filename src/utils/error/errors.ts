@@ -1,4 +1,5 @@
 import { env } from '../../config/env/env.js'
+import { logger } from '../../shared/logger/pino.js'
 import { type AppError } from './AppError.js'
 
 const convertAppErrorTypeToApiStatusCode = (value: AppError['errorType']) => {
@@ -33,7 +34,8 @@ export const mapAppErrorToApiError = (error: AppError) => {
 }
 
 export const handleAppError = (label: string, error: Error) => {
-	if (env.NODE_ENV !== 'production') console.error(label.toUpperCase(), ':', error.message || error)
+	if (env.NODE_ENV !== 'production')
+		logger.error({ label: label.toUpperCase(), error: error?.message || JSON.stringify(error), stack: error.stack })
 
 	throw error
 }
